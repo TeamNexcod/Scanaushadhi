@@ -16,23 +16,28 @@ app.get("/", (req, res) => {
 });
 
 
-// 🔥 1. PREMIUM IMAGE SCAN (SMART AI)
+// 🔥 1. PRO IMAGE SCAN (SMART + FILTERED)
 app.post("/scan", async (req, res) => {
   try {
     const { image } = req.body;
 
     const prompt = `
-You are an expert in medicines, skincare, supplements, and health products.
+You are an expert in medicines, skincare, cosmetics, and health products.
 
-Analyze the image carefully.
+STRICT RULES:
+- Only analyze if the image contains a medicine, skincare, cosmetic, or health-related product
+- If NOT related (like electronics, mouse, laptop, random objects), then REJECT it
+- Do NOT guess wrong
 
-- It can be medicine, skincare, cosmetic, or any health-related product
-- Even if unsure, give BEST possible guess
-- NEVER return empty fields
-- ALWAYS return useful info
+If NOT relevant, return:
+{
+  "name": "NOT_HEALTH_PRODUCT",
+  "category": "invalid",
+  "type": "invalid",
+  "sections": {}
+}
 
-Return ONLY JSON:
-
+If relevant, return ONLY JSON:
 {
   "name": "",
   "category": "",
@@ -48,6 +53,10 @@ Return ONLY JSON:
     "warnings": ""
   }
 }
+
+IMPORTANT:
+- Only return accurate info
+- If unsure, write "Not clearly visible"
 `;
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -74,25 +83,44 @@ Return ONLY JSON:
           }
         ],
         max_tokens: 1000,
-        temperature: 0.4
+        temperature: 0.3
       })
     });
 
     const data = await response.json();
     let reply = data.choices?.[0]?.message?.content || "{}";
 
-    // 🔥 CLEAN JSON (IMPORTANT)
+    // 🔥 CLEAN JSON
     reply = reply.replace(/```json|```/g, "").trim();
 
     let parsed;
 
     try {
       parsed = JSON.parse(reply);
-    } catch (e) {
+    } catch {
       parsed = {};
     }
 
-    // 🔥 FALLBACK (NEVER EMPTY)
+    // 🔥 INVALID PRODUCT FILTER
+    if (parsed.name === "NOT_HEALTH_PRODUCT") {
+      return res.json({
+        name: "Invalid Item",
+        category: "Not Supported",
+        type: "Unknown",
+        sections: {
+          mainUse: "This item is not a medicine or skincare product.",
+          otherUses: "",
+          composition: "",
+          dosage: "",
+          howToUse: "",
+          sideEffects: "",
+          safety: "",
+          warnings: "Please scan only medicine, cosmetic, or healthcare products."
+        }
+      });
+    }
+
+    // 🔥 FALLBACK SAFE DATA
     parsed.name = parsed.name || "Unknown Product";
     parsed.category = parsed.category || "General";
     parsed.type = parsed.type || "Product";
@@ -100,14 +128,14 @@ Return ONLY JSON:
     if (!parsed.sections) parsed.sections = {};
 
     const defaultSections = {
-      mainUse: "General use for health or skincare.",
-      otherUses: "May have additional supportive uses.",
-      composition: "Ingredients not clearly visible.",
-      dosage: "Follow label instructions.",
-      howToUse: "Use as directed on packaging.",
-      sideEffects: "Generally safe, check label.",
-      safety: "Consult expert if unsure.",
-      warnings: "Avoid misuse."
+      mainUse: "Not clearly visible",
+      otherUses: "Not clearly visible",
+      composition: "Not clearly visible",
+      dosage: "Follow product label",
+      howToUse: "Use as directed",
+      sideEffects: "Check product label",
+      safety: "Consult expert if needed",
+      warnings: "Avoid misuse"
     };
 
     parsed.sections = { ...defaultSections, ...parsed.sections };
@@ -121,7 +149,7 @@ Return ONLY JSON:
 });
 
 
-// 🔥 2. SIDE EFFECTS (SMART)
+// 🔥 2. SIDE EFFECTS
 app.post("/sideeffects", async (req, res) => {
   try {
     const { medicine } = req.body;
@@ -169,7 +197,7 @@ Return ONLY JSON:
 });
 
 
-// 🔥 3. COMPOSITION (SMART)
+// 🔥 3. COMPOSITION
 app.post("/composition", async (req, res) => {
   try {
     const { medicine } = req.body;
@@ -224,7 +252,7 @@ Return ONLY JSON:
 });
 
 
-// 🔥 4. CHAT (NO CHANGE BUT CLEAN)
+// 🔥 4. CHAT
 app.post("/chat", async (req, res) => {
   try {
     const { messages } = req.body;
