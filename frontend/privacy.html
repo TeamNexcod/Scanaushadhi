@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head> 
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>Privacy • Scan Aushadhi</title> 
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"> 
+    <style> 
+        :root { 
+            --primary-start: #22c55e; 
+            --primary-end: #16a34a; 
+            --accent: #f97316;
+            --primary-gradient: linear-gradient(135deg, var(--primary-start) 0%, var(--primary-end) 100%); 
+            --bg: linear-gradient(180deg, #eaffea 0%, #ffffff 40%, #dff6ff 100%); 
+            --surface: rgba(255, 255, 255, 0.8); 
+            --text-main: #1e2937; 
+            --text-muted: #64748b; 
+            --border: rgba(34, 197, 94, 0.15); 
+            --shadow-sm: 0 8px 24px rgba(34, 197, 94, 0.08); 
+        } 
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; } 
+
+        body { 
+            background: var(--bg); 
+            background-attachment: fixed;
+            color: var(--text-main); 
+            min-height: 100vh; 
+            line-height: 1.6;
+        } 
+
+        header { 
+            position: sticky; 
+            top: 0; 
+            background: rgba(255, 255, 255, 0.8); 
+            backdrop-filter: blur(16px); 
+            -webkit-backdrop-filter: blur(16px);
+            z-index: 1000; 
+            padding: 12px 20px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            border-bottom: 1px solid var(--border); 
+            box-shadow: var(--shadow-sm);
+        } 
+
+        .back-btn { 
+            text-decoration: none; 
+            color: var(--primary-end); 
+            font-weight: 600; 
+            font-size: 14px; 
+            display: flex; 
+            align-items: center; 
+            gap: 6px;
+            background: rgba(34, 197, 94, 0.1);
+            padding: 6px 14px;
+            border-radius: 999px;
+            transition: 0.3s;
+        } 
+        .back-btn:active { transform: scale(0.92); }
+
+        .app-title { 
+            font-family: 'Caveat', cursive; 
+            font-size: 22px; 
+            font-weight: 700; 
+            background: var(--primary-gradient); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+        } 
+
+        .container { 
+            max-width: 500px; 
+            margin: 20px auto; 
+            padding: 0 16px 60px 16px; 
+        } 
+
+        .card { 
+            background: var(--surface); 
+            backdrop-filter: blur(12px); 
+            -webkit-backdrop-filter: blur(12px);
+            padding: 24px 20px; 
+            border-radius: 28px; 
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            box-shadow: var(--shadow-sm); 
+            animation: fadeUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        } 
+
+        @keyframes fadeUp { 
+            from { opacity: 0; transform: translateY(30px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
+        h1 { font-size: 1.6rem; margin-bottom: 4px; font-weight: 800; color: var(--text-main); } 
+        .update-tag { 
+            font-size: 11px; 
+            color: var(--primary-end); 
+            font-weight: 600;
+            text-transform: uppercase; 
+            margin-bottom: 20px; 
+            display: inline-block;
+            background: rgba(34, 197, 94, 0.1);
+            padding: 2px 10px;
+            border-radius: 6px;
+        } 
+
+        .note-box { 
+            background: linear-gradient(135deg, #fff9db 0%, #fff3bf 100%); 
+            border-left: 4px solid #fcc419; 
+            padding: 12px 15px; 
+            border-radius: 12px; 
+            margin: 20px 0; 
+            font-size: 13px; 
+            color: #856404;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        } 
+
+        h2 { 
+            font-size: 1rem; 
+            margin: 25px 0 10px 0; 
+            color: var(--primary-end); 
+            display: flex; 
+            align-items: center; 
+            gap: 10px;
+            font-weight: 700;
+        } 
+
+        h2 i { font-size: 14px; opacity: 0.8; }
+
+        p, li { color: #4b5563; font-size: 13.5px; margin-bottom: 8px; } 
+        ul { padding-left: 20px; list-style: none; }
+        ul li { position: relative; padding-left: 5px; }
+        ul li::before { 
+            content: "•"; 
+            color: var(--primary-start); 
+            font-weight: bold; 
+            position: absolute; 
+            left: -15px; 
+        }
+
+        .footer-info { 
+            margin-top: 30px; 
+            padding: 20px; 
+            border-radius: 20px;
+            background: rgba(34, 197, 94, 0.05);
+            border: 1px dashed var(--border);
+            text-align: center; 
+        } 
+
+        .contact-link { 
+            color: var(--primary-end); 
+            text-decoration: none; 
+            font-weight: 700; 
+            border-bottom: 2px solid rgba(34, 197, 94, 0.2);
+        } 
+
+        footer { 
+            text-align: center; 
+            padding: 20px; 
+            font-size: 11px; 
+            color: var(--text-muted); 
+            line-height: 1.6;
+        } 
+        footer strong { color: var(--primary-end); }
+    </style> 
+</head> 
+<body> 
+    <header> 
+        <a href="index.html" class="back-btn"> 
+            <i class="fas fa-chevron-left"></i> Back 
+        </a> 
+        <div class="app-title">Scan Aushadhi</div> 
+        <div style="width: 45px;"></div> 
+    </header> 
+
+    <div class="container"> 
+        <div class="card"> 
+            <h1>Privacy Policy</h1> 
+            <span class="update-tag">Last Updated: March 19, 2026</span> 
+
+            <p>At <strong>Scan Aushadhi</strong>, privacy is our priority. We don't want your data; we just want to help you understand medicines safely.</p> 
+
+            <div class="note-box"> 
+                <i class="fas fa-exclamation-triangle"></i>
+                <span><strong>Disclaimer:</strong> This app is strictly for informational purposes and NOT a substitute for professional medical advice.</span> 
+            </div> 
+
+            <h2><i class="fas fa-user-shield"></i> 1. Zero Data Logging</h2> 
+            <ul> 
+                <li><strong>No Accounts:</strong> No signup or login is ever required.</li> 
+                <li><strong>No PII:</strong> We do not collect names, emails, or phone numbers.</li> 
+                <li><strong>Temporary Photos:</strong> Scanned images are processed in-memory and deleted instantly.</li> 
+            </ul> 
+
+            <h2><i class="fas fa-camera"></i> 2. Essential Permissions</h2> 
+            <p>We only request <strong>Camera</strong> access to scan medicine labels. We cannot and do not access your private gallery or files without your direct action.</p> 
+
+            <h2><i class="fas fa-microchip"></i> 3. Secure AI Processing</h2> 
+            <p>We use encrypted AI APIs to read medicine text. This process is fully anonymous. No personal metadata is ever shared with third parties.</p> 
+
+            <h2><i class="fas fa-lock"></i> 4. Maximum Security</h2> 
+            <p>Your session is protected with industry-standard encryption. Since we do not maintain a user database, there is no risk of your personal data being leaked.</p> 
+
+            <div class="footer-info"> 
+                <strong>Have Questions?</strong><br> 
+                Reach out to us at:<br>
+                <a href="mailto:krishxav@gmail.com" class="contact-link">krishxav@gmail.com</a> 
+            </div> 
+        </div> 
+    </div> 
+
+    <footer> 
+        &copy; 2026 NexCod Developers<br>
+        By <strong>Team Nexcod</strong>
+    </footer> 
+</body> 
+</html>
