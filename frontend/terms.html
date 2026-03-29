@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head> 
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>Terms • Scan Aushadhi</title> 
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"> 
+    <style> 
+        :root { 
+            --primary-start: #22c55e; 
+            --primary-end: #16a34a; 
+            --accent: #f97316;
+            --primary-gradient: linear-gradient(135deg, var(--primary-start) 0%, var(--primary-end) 100%); 
+            --bg: linear-gradient(180deg, #eaffea 0%, #ffffff 40%, #dff6ff 100%); 
+            --surface: rgba(255, 255, 255, 0.8); 
+            --text-main: #1e2937; 
+            --text-muted: #64748b; 
+            --border: rgba(34, 197, 94, 0.15); 
+            --shadow-sm: 0 8px 24px rgba(34, 197, 94, 0.08); 
+        } 
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; } 
+
+        body { 
+            background: var(--bg); 
+            background-attachment: fixed;
+            color: var(--text-main); 
+            min-height: 100vh; 
+            line-height: 1.6;
+        } 
+
+        header { 
+            position: sticky; 
+            top: 0; 
+            background: rgba(255, 255, 255, 0.8); 
+            backdrop-filter: blur(16px); 
+            -webkit-backdrop-filter: blur(16px);
+            z-index: 1000; 
+            padding: 12px 20px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            border-bottom: 1px solid var(--border); 
+            box-shadow: var(--shadow-sm);
+        } 
+
+        .back-btn { 
+            text-decoration: none; 
+            color: var(--primary-end); 
+            font-weight: 600; 
+            font-size: 14px; 
+            display: flex; 
+            align-items: center; 
+            gap: 6px;
+            background: rgba(34, 197, 94, 0.1);
+            padding: 6px 14px;
+            border-radius: 999px;
+            transition: 0.3s;
+        } 
+        .back-btn:active { transform: scale(0.92); }
+
+        .app-title { 
+            font-family: 'Caveat', cursive; 
+            font-size: 22px; 
+            font-weight: 700; 
+            background: var(--primary-gradient); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+        } 
+
+        .container { 
+            max-width: 500px; 
+            margin: 20px auto; 
+            padding: 0 16px 60px 16px; 
+        } 
+
+        .card { 
+            background: var(--surface); 
+            backdrop-filter: blur(12px); 
+            -webkit-backdrop-filter: blur(12px);
+            padding: 24px 20px; 
+            border-radius: 28px; 
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            box-shadow: var(--shadow-sm); 
+            animation: fadeUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        } 
+
+        @keyframes fadeUp { 
+            from { opacity: 0; transform: translateY(30px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
+        h1 { font-size: 1.6rem; margin-bottom: 4px; font-weight: 800; color: var(--text-main); } 
+        .last-updated { 
+            font-size: 11px; 
+            color: var(--text-muted); 
+            text-transform: uppercase; 
+            margin-bottom: 20px; 
+            display: block;
+            letter-spacing: 0.5px;
+        } 
+
+        .alert-box { 
+            background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%); 
+            border-left: 4px solid #ef4444; 
+            padding: 14px 16px; 
+            border-radius: 14px; 
+            margin: 20px 0; 
+            font-size: 13px; 
+            color: #991b1b;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            animation: fadeUp 0.5s forwards 0.2s;
+            opacity: 0;
+        } 
+
+        h2 { 
+            font-size: 1rem; 
+            margin: 25px 0 10px 0; 
+            color: var(--primary-end); 
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        } 
+
+        p { color: #4b5563; font-size: 13.5px; margin-bottom: 15px; } 
+
+        .option-card { 
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid var(--border); 
+            padding: 16px; 
+            border-radius: 18px; 
+            margin-bottom: 12px; 
+            text-decoration: none; 
+            display: block; 
+            transition: 0.3s; 
+            opacity: 0; 
+            animation: fadeUp 0.5s forwards;
+        } 
+        .option-card:nth-of-type(1) { animation-delay: 0.4s; } 
+        .option-card:nth-of-type(2) { animation-delay: 0.5s; } 
+
+        .option-card:active { background: #fff; transform: scale(0.97); } 
+
+        .tag { 
+            font-size: 10px; 
+            font-weight: 700; 
+            padding: 3px 10px; 
+            border-radius: 8px; 
+            background: rgba(34, 197, 94, 0.1); 
+            color: var(--primary-end); 
+            text-transform: uppercase;
+        } 
+
+        .email-text { 
+            display: block; 
+            font-weight: 600; 
+            font-size: 15px; 
+            margin: 6px 0 2px 0; 
+            color: var(--text-main); 
+        } 
+
+        footer { 
+            text-align: center; 
+            padding: 20px; 
+            font-size: 11px; 
+            color: var(--text-muted); 
+            animation: fadeUp 0.5s forwards 0.6s;
+            opacity: 0;
+        } 
+        footer strong { color: var(--primary-end); }
+    </style> 
+</head> 
+<body> 
+    <header> 
+        <a href="index.html" class="back-btn"> 
+            <i class="fas fa-chevron-left"></i> Back 
+        </a> 
+        <div class="app-title">Scan Aushadhi</div> 
+        <div style="width: 45px;"></div> 
+    </header> 
+
+    <div class="container"> 
+        <div class="card"> 
+            <h1>Terms & Conditions</h1> 
+            <span class="last-updated">Updated: March 19, 2026</span> 
+
+            <div class="alert-box"> 
+                <i class="fas fa-hand-holding-medical" style="font-size: 18px; margin-top: 2px;"></i>
+                <span><strong>Legal Disclaimer:</strong> This application is for informational purposes only. It does not provide medical advice, diagnosis, or treatment.</span> 
+            </div> 
+
+            <h2>1. User Agreement</h2> 
+            <p>By accessing or using <strong>Scan Aushadhi</strong>, you acknowledge that you have read, understood, and agree to be bound by these terms. If you do not agree, please discontinue use immediately.</p> 
+
+            <h2>2. Not a Medical Professional</h2> 
+            <p>The AI-generated insights regarding dosage, uses, and side effects are based on publicly available data. **Always consult a qualified healthcare provider** before starting or changing any medication.</p> 
+
+            <h2>3. Contact Support</h2> 
+            <a href="mailto:Nexcod.developer@gmail.com" class="option-card"> 
+                <span class="tag"><i class="fas fa-bug"></i> Technical</span> 
+                <span class="email-text">Nexcod.developer@gmail.com</span> 
+                <p style="font-size: 12px; margin:0; color: var(--text-muted);">Report app crashes, performance issues or bugs.</p> 
+            </a> 
+
+            <a href="mailto:krishxav@gmail.com" class="option-card"> 
+                <span class="tag" style="background:rgba(168, 85, 247, 0.1); color:#7e22ce;"><i class="fas fa-shield-alt"></i> Admin</span> 
+                <span class="email-text">krishxav@gmail.com</span> 
+                <p style="font-size: 12px; margin:0; color: var(--text-muted);">For legal, policy or administrative inquiries.</p> 
+            </a> 
+        </div> 
+    </div> 
+
+    <footer> 
+        &copy; 2026 <strong>NexCod Developers</strong><br>
+        Ensuring safe information for everyone.
+    </footer> 
+</body> 
+</html>
