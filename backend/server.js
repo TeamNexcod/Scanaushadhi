@@ -16,20 +16,32 @@ app.get("/", (req, res) => {
 });
 
 
-// 🔥 1. PRO IMAGE SCAN (SMART + FILTERED)
+// 🔥 1. ULTRA PRO SCAN (ACCURATE + LANGUAGE SUPPORT)
 app.post("/scan", async (req, res) => {
   try {
-    const { image } = req.body;
+    const { image, lang = "en" } = req.body;
+
+    const languageNote = lang === "hi"
+      ? "Respond in Hindi language."
+      : "Respond in English language.";
 
     const prompt = `
-You are an expert in medicines, skincare, cosmetics, and health products.
+You are a professional medical and product analysis expert.
 
-STRICT RULES:
-- Only analyze if the image contains a medicine, skincare, cosmetic, or health-related product
-- If NOT related (like electronics, mouse, laptop, random objects), then REJECT it
-- Do NOT guess wrong
+TASK:
+- Analyze the image carefully (read label, brand, ingredients)
+- Only accept: medicine, skincare, cosmetic, supplement
+- Reject other items (mouse, electronics, objects)
 
-If NOT relevant, return:
+ACCURACY RULE:
+- Do NOT guess blindly
+- If unsure → say "Not clearly visible"
+- Extract maximum real information
+
+LANGUAGE:
+${languageNote}
+
+If NOT relevant return:
 {
   "name": "NOT_HEALTH_PRODUCT",
   "category": "invalid",
@@ -37,7 +49,8 @@ If NOT relevant, return:
   "sections": {}
 }
 
-If relevant, return ONLY JSON:
+If valid return JSON:
+
 {
   "name": "",
   "category": "",
@@ -53,10 +66,6 @@ If relevant, return ONLY JSON:
     "warnings": ""
   }
 }
-
-IMPORTANT:
-- Only return accurate info
-- If unsure, write "Not clearly visible"
 `;
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -72,7 +81,7 @@ IMPORTANT:
           {
             role: "user",
             content: [
-              { type: "text", text: "Identify this product" },
+              { type: "text", text: "Analyze this product image carefully" },
               {
                 type: "image_url",
                 image_url: {
@@ -83,14 +92,13 @@ IMPORTANT:
           }
         ],
         max_tokens: 1000,
-        temperature: 0.3
+        temperature: 0.4
       })
     });
 
     const data = await response.json();
     let reply = data.choices?.[0]?.message?.content || "{}";
 
-    // 🔥 CLEAN JSON
     reply = reply.replace(/```json|```/g, "").trim();
 
     let parsed;
@@ -101,42 +109,57 @@ IMPORTANT:
       parsed = {};
     }
 
-    // 🔥 INVALID PRODUCT FILTER
+    // ❌ INVALID ITEM
     if (parsed.name === "NOT_HEALTH_PRODUCT") {
       return res.json({
-        name: "Invalid Item",
+        name: lang === "hi" ? "अमान्य वस्तु" : "Invalid Item",
         category: "Not Supported",
         type: "Unknown",
         sections: {
-          mainUse: "This item is not a medicine or skincare product.",
+          mainUse: lang === "hi"
+            ? "यह चिकित्सा या स्किनकेयर उत्पाद नहीं है"
+            : "This is not a health-related product",
           otherUses: "",
           composition: "",
           dosage: "",
           howToUse: "",
           sideEffects: "",
           safety: "",
-          warnings: "Please scan only medicine, cosmetic, or healthcare products."
+          warnings: lang === "hi"
+            ? "कृपया केवल दवाइयाँ या स्किनकेयर उत्पाद स्कैन करें"
+            : "Scan only medicine or health products"
         }
       });
     }
 
-    // 🔥 FALLBACK SAFE DATA
-    parsed.name = parsed.name || "Unknown Product";
+    // 🔥 SAFE FALLBACK (SMART)
+    parsed.name = parsed.name || (lang === "hi" ? "अज्ञात उत्पाद" : "Unknown Product");
     parsed.category = parsed.category || "General";
     parsed.type = parsed.type || "Product";
 
     if (!parsed.sections) parsed.sections = {};
 
-    const defaultSections = {
-      mainUse: "Not clearly visible",
-      otherUses: "Not clearly visible",
-      composition: "Not clearly visible",
-      dosage: "Follow product label",
-      howToUse: "Use as directed",
-      sideEffects: "Check product label",
-      safety: "Consult expert if needed",
-      warnings: "Avoid misuse"
-    };
+    const defaultSections = lang === "hi"
+      ? {
+          mainUse: "यह उत्पाद स्वास्थ्य या स्किनकेयर उपयोग के लिए हो सकता है",
+          otherUses: "अतिरिक्त उपयोग हो सकते हैं",
+          composition: "संरचना स्पष्ट नहीं है",
+          dosage: "लेबल के अनुसार उपयोग करें",
+          howToUse: "निर्देश अनुसार उपयोग करें",
+          sideEffects: "कुछ लोगों में हल्के साइड इफेक्ट हो सकते हैं",
+          safety: "जरूरत हो तो डॉक्टर से सलाह लें",
+          warnings: "गलत उपयोग से बचें"
+        }
+      : {
+          mainUse: "Used for health or skincare benefits",
+          otherUses: "May have additional uses",
+          composition: "Ingredients not clearly visible",
+          dosage: "Follow product instructions",
+          howToUse: "Use as directed",
+          sideEffects: "May cause mild side effects",
+          safety: "Consult expert if needed",
+          warnings: "Avoid misuse"
+        };
 
     parsed.sections = { ...defaultSections, ...parsed.sections };
 
@@ -149,15 +172,16 @@ IMPORTANT:
 });
 
 
-// 🔥 2. SIDE EFFECTS
+// 🔥 2. SIDE EFFECTS (LANGUAGE SUPPORT)
 app.post("/sideeffects", async (req, res) => {
   try {
-    const { medicine } = req.body;
+    const { medicine, lang = "en" } = req.body;
 
     const prompt = `
-Tell side effects of ${medicine} clearly.
+Tell side effects of ${medicine}.
+${lang === "hi" ? "Answer in Hindi." : "Answer in English."}
 
-Return ONLY JSON:
+Return JSON:
 {
   "name": "",
   "sideEffects": ""
@@ -186,26 +210,32 @@ Return ONLY JSON:
     try {
       parsed = JSON.parse(reply);
     } catch {
-      parsed = { name: medicine, sideEffects: "No clear data available." };
+      parsed = {
+        name: medicine,
+        sideEffects: lang === "hi"
+          ? "डेटा उपलब्ध नहीं है"
+          : "No data available"
+      };
     }
 
     res.json(parsed);
 
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: "Side effect error" });
   }
 });
 
 
-// 🔥 3. COMPOSITION
+// 🔥 3. COMPOSITION (LANGUAGE SUPPORT)
 app.post("/composition", async (req, res) => {
   try {
-    const { medicine } = req.body;
+    const { medicine, lang = "en" } = req.body;
 
     const prompt = `
 Give composition, uses and precautions of ${medicine}.
+${lang === "hi" ? "Answer in Hindi." : "Answer in English."}
 
-Return ONLY JSON:
+Return JSON:
 {
   "name": "",
   "composition": "",
@@ -238,15 +268,15 @@ Return ONLY JSON:
     } catch {
       parsed = {
         name: medicine,
-        composition: "Not available",
-        uses: "General use",
-        precautions: "Consult doctor"
+        composition: "",
+        uses: "",
+        precautions: ""
       };
     }
 
     res.json(parsed);
 
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: "Composition error" });
   }
 });
@@ -275,7 +305,7 @@ app.post("/chat", async (req, res) => {
 
     res.json({ reply });
 
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: "Chat error" });
   }
 });
