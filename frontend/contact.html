@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head> 
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>Support • Scan Aushadhi</title> 
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"> 
+    <style> 
+        :root { 
+            --primary-start: #22c55e; 
+            --primary-end: #16a34a; 
+            --accent: #f97316;
+            --primary-gradient: linear-gradient(135deg, var(--primary-start) 0%, var(--primary-end) 100%); 
+            --bg: linear-gradient(180deg, #eaffea 0%, #ffffff 40%, #dff6ff 100%); 
+            --surface: rgba(255, 255, 255, 0.7); 
+            --text-main: #1e2937; 
+            --text-muted: #64748b; 
+            --border: rgba(34, 197, 94, 0.15); 
+            --shadow-sm: 0 8px 24px rgba(34, 197, 94, 0.08); 
+        } 
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; } 
+
+        body { 
+            background: var(--bg); 
+            background-attachment: fixed;
+            color: var(--text-main); 
+            min-height: 100vh; 
+        } 
+
+        header { 
+            position: sticky; 
+            top: 0; 
+            background: rgba(255, 255, 255, 0.8); 
+            backdrop-filter: blur(16px); 
+            -webkit-backdrop-filter: blur(16px);
+            z-index: 1000; 
+            padding: 12px 20px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            border-bottom: 1px solid var(--border); 
+            box-shadow: var(--shadow-sm);
+        } 
+
+        .back-btn { 
+            text-decoration: none; 
+            color: var(--primary-end); 
+            font-weight: 600; 
+            font-size: 14px; 
+            display: flex; 
+            align-items: center; 
+            gap: 6px;
+            background: rgba(34, 197, 94, 0.1);
+            padding: 6px 14px;
+            border-radius: 999px;
+            transition: 0.3s;
+        } 
+        .back-btn:active { transform: scale(0.92); background: rgba(34, 197, 94, 0.2); }
+
+        .app-title { 
+            font-family: 'Caveat', cursive; 
+            font-size: 22px; 
+            font-weight: 700; 
+            background: var(--primary-gradient); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+        } 
+
+        .container { 
+            max-width: 480px; 
+            margin: 20px auto; 
+            padding: 0 16px; 
+            padding-bottom: 40px;
+        } 
+
+        .main-card { 
+            background: var(--surface); 
+            backdrop-filter: blur(12px); 
+            -webkit-backdrop-filter: blur(12px);
+            padding: 24px 20px; 
+            border-radius: 24px; 
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: var(--shadow-sm); 
+            text-align: center; 
+            animation: fadeUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        } 
+
+        @keyframes fadeUp { 
+            from { opacity: 0; transform: translateY(20px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
+        h1 { font-size: 1.5rem; margin-bottom: 8px; font-weight: 700; color: var(--text-main); } 
+        .info-text { color: var(--text-muted); font-size: 14px; margin-bottom: 25px; } 
+
+        .support-box { display: grid; gap: 12px; } 
+
+        .contact-item { 
+            background: rgba(255, 255, 255, 0.6); 
+            border: 1px solid var(--border); 
+            padding: 16px; 
+            border-radius: 18px; 
+            text-decoration: none; 
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            transition: all 0.3s ease; 
+            opacity: 0; 
+            animation: fadeUp 0.5s forwards;
+        } 
+
+        .contact-item:nth-child(1) { animation-delay: 0.2s; } 
+        .contact-item:nth-child(2) { animation-delay: 0.3s; } 
+
+        .contact-item:active { 
+            background: #ffffff; 
+            transform: scale(0.97); 
+            border-color: var(--primary-start);
+            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.1);
+        } 
+
+        .badge { 
+            font-size: 10px; 
+            font-weight: 700; 
+            text-transform: uppercase; 
+            padding: 4px 10px; 
+            border-radius: 999px; 
+            margin-bottom: 8px; 
+            display: inline-block; 
+            letter-spacing: 0.5px;
+        } 
+
+        .badge-dev { background: rgba(34, 197, 94, 0.12); color: var(--primary-end); } 
+        .badge-admin { background: rgba(249, 115, 22, 0.12); color: var(--accent); } 
+
+        .email { 
+            display: block; 
+            font-weight: 600; 
+            font-size: 15px; 
+            color: var(--text-main); 
+            margin: 2px 0; 
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        } 
+        .email i { color: var(--primary-start); font-size: 14px; }
+
+        .desc { font-size: 12px; color: var(--text-muted); margin-top: 4px; } 
+
+        footer { 
+            text-align: center; 
+            padding: 30px 15px; 
+            font-size: 11px; 
+            color: var(--text-muted); 
+            line-height: 1.6;
+            animation: fadeUp 0.5s forwards 0.4s;
+            opacity: 0;
+        } 
+        footer strong { color: var(--primary-end); }
+
+        /* Ripple Effect Container */
+        .ripple-container { position: relative; overflow: hidden; }
+        span.ripple {
+            position: absolute;
+            border-radius: 50%;
+            transform: scale(0);
+            animation: ripple-anim 0.6s linear;
+            background-color: rgba(34, 197, 94, 0.15);
+            pointer-events: none;
+        }
+        @keyframes ripple-anim {
+            to { transform: scale(4); opacity: 0; }
+        }
+    </style> 
+</head> 
+<body> 
+    <header> 
+        <a href="index.html" class="back-btn"> 
+            <i class="fas fa-chevron-left"></i> Back 
+        </a> 
+        <div class="app-title">Scan Aushadhi</div> 
+        <div style="width: 45px;"></div> 
+    </header> 
+
+    <div class="container"> 
+        <div class="main-card"> 
+            <div style="font-size: 50px; margin-bottom: 10px;">🎧</div>
+            <h1>Contact Support</h1> 
+            <p class="info-text">Facing an issue? Our team is here to help you 24/7.</p> 
+
+            <div class="support-box"> 
+                <a href="mailto:Nexcod.developer@gmail.com" class="contact-item ripple-container"> 
+                    <span class="badge badge-dev"><i class="fas fa-code"></i> Tech & Bugs</span> 
+                    <span class="email"><i class="fas fa-envelope"></i> Nexcod.developer@gmail.com</span> 
+                    <p class="desc">Report app crashes, UI glitches or technical errors.</p> 
+                </a> 
+
+                <a href="mailto:krishxav@gmail.com" class="contact-item ripple-container"> 
+                    <span class="badge badge-admin"><i class="fas fa-user-shield"></i> Admin & Policy</span> 
+                    <span class="email"><i class="fas fa-paper-plane"></i> krishxav@gmail.com</span> 
+                    <p class="desc">For business queries, ads or data privacy concerns.</p> 
+                </a> 
+            </div> 
+        </div> 
+    </div> 
+
+    <footer> 
+        &copy; 2026 NexCod Developers<br>
+        Designed & Developed by <strong>Krishav Kumar</strong>
+    </footer>
+
+    <script>
+        // Ripple Effect
+        document.querySelectorAll('.ripple-container').forEach(button => {
+            button.addEventListener('click', function(e) {
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+                
+                const ripple = document.createElement('span');
+                ripple.style.width = ripple.style.height = `${size}px`;
+                ripple.style.left = `${x}px`;
+                ripple.style.top = `${y}px`;
+                ripple.classList.add('ripple');
+                
+                this.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
+            });
+        });
+    </script>
+</body> 
+</html>
