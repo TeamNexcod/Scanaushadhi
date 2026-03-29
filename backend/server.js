@@ -2,10 +2,10 @@ import express from "express";
 import fetch from "node-fetch";
 import cors from "cors";
 import dotenv from "dotenv";
+
 dotenv.config();
 
 const app = express();
-
 
 app.use(cors());
 app.use(express.json({ limit: "10mb" }));
@@ -16,7 +16,7 @@ app.get("/", (req, res) => {
 });
 
 
-// 🔥 1. IMAGE SCAN (composition + prescription)
+// 🔥 1. IMAGE SCAN (FIXED)
 app.post("/scan", async (req, res) => {
   try {
     const { image } = req.body;
@@ -26,11 +26,18 @@ Analyze this medicine image and return ONLY JSON:
 
 {
   "name": "",
-  "composition": [],
-  "uses": [],
-  "side_effects": [],
-  "precautions": [],
-  "confidence": ""
+  "category": "",
+  "type": "",
+  "sections": {
+    "mainUse": "",
+    "otherUses": "",
+    "composition": "",
+    "dosage": "",
+    "howToUse": "",
+    "sideEffects": "",
+    "safety": "",
+    "warnings": ""
+  }
 }
 `;
 
@@ -62,8 +69,23 @@ Analyze this medicine image and return ONLY JSON:
     });
 
     const data = await response.json();
-    const reply = data.choices?.[0]?.message?.content || "No response";
-res.json({ reply });
+
+    // ✅ FIX: parse response properly
+    const reply = data.choices?.[0]?.message?.content || "{}";
+
+    let parsed;
+    try {
+      parsed = JSON.parse(reply);
+    } catch (e) {
+      parsed = {
+        name: "UNKNOWN",
+        category: "unknown",
+        type: "unknown",
+        sections: {}
+      };
+    }
+
+    res.json(parsed);
 
   } catch (err) {
     console.error(err);
@@ -72,17 +94,17 @@ res.json({ reply });
 });
 
 
-// 🔥 2. SIDE EFFECT CHECK
+// 🔥 2. SIDE EFFECT CHECK (FIXED)
 app.post("/sideeffects", async (req, res) => {
   try {
     const { medicine } = req.body;
 
     const prompt = `
 Tell side effects of ${medicine} in simple bullet points.
-Return JSON:
+Return ONLY JSON:
 {
   "name": "",
-  "side_effects": []
+  "sideEffects": ""
 }
 `;
 
@@ -100,8 +122,16 @@ Return JSON:
     });
 
     const data = await response.json();
-  const reply = data.choices?.[0]?.message?.content || "No response";
-res.json({ reply });
+    const reply = data.choices?.[0]?.message?.content || "{}";
+
+    let parsed;
+    try {
+      parsed = JSON.parse(reply);
+    } catch {
+      parsed = { name: medicine, sideEffects: "" };
+    }
+
+    res.json(parsed);
 
   } catch (err) {
     res.status(500).json({ error: "Side effect error" });
@@ -109,19 +139,19 @@ res.json({ reply });
 });
 
 
-// 🔥 3. COMPOSITION SEARCH (text input)
+// 🔥 3. COMPOSITION SEARCH (FIXED)
 app.post("/composition", async (req, res) => {
   try {
     const { medicine } = req.body;
 
     const prompt = `
 Give composition, uses and precautions of ${medicine}.
-Return JSON:
+Return ONLY JSON:
 {
   "name": "",
-  "composition": [],
-  "uses": [],
-  "precautions": []
+  "composition": "",
+  "uses": "",
+  "precautions": ""
 }
 `;
 
@@ -139,8 +169,16 @@ Return JSON:
     });
 
     const data = await response.json();
-    const reply = data.choices?.[0]?.message?.content || "No response";
-res.json({ reply });
+    const reply = data.choices?.[0]?.message?.content || "{}";
+
+    let parsed;
+    try {
+      parsed = JSON.parse(reply);
+    } catch {
+      parsed = { name: medicine, composition: "", uses: "", precautions: "" };
+    }
+
+    res.json(parsed);
 
   } catch (err) {
     res.status(500).json({ error: "Composition error" });
@@ -148,7 +186,7 @@ res.json({ reply });
 });
 
 
-// 🔥 4. CHAT AI
+// 🔥 4. CHAT AI (FIXED)
 app.post("/chat", async (req, res) => {
   try {
     const { messages } = req.body;
@@ -167,8 +205,9 @@ app.post("/chat", async (req, res) => {
     });
 
     const data = await response.json();
-   const reply = data.choices?.[0]?.message?.content || "No response";
-res.json({ reply });
+    const reply = data.choices?.[0]?.message?.content || "No response";
+
+    res.json({ reply });
 
   } catch (err) {
     res.status(500).json({ error: "Chat error" });
