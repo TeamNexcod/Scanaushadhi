@@ -2,13 +2,13 @@
 <html lang="en">
 <head> 
     <meta charset="UTF-8"> 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"> 
     <title>Scan Aushadhi • Premium v1.5</title> 
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet"> 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"> 
     <style> 
         html {
-            font-size: clamp(14px, 3.5vw, 18px);
+            font-size: 16px;
         }
         :root { 
             /* Premium Herbal Theme Variables */
@@ -23,14 +23,14 @@
             --text-muted: #64748b; 
             --border: rgba(34,197,94,0.12); 
             --shadow-sm: 0 0.5rem 1.5rem rgba(34,197,94,0.08); 
-            --glow: 0 0 1.125rem rgba(34,197,94,0.25); 
+            --glow: 0 0 1rem rgba(34,197,94,0.25); 
         } 
-        * { margin:0; padding:0; box-sizing:border-box; font-family:'Poppins',sans-serif; -webkit-tap-highlight-color:transparent; touch-action:manipulation; user-select:none; } 
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Poppins',sans-serif; -webkit-tap-highlight-color:transparent; touch-action:manipulation; outline:none; } 
         body { 
             background: var(--bg); 
             background-attachment: fixed;
             color: var(--text-main); 
-            min-height: 100vh; 
+            min-height: 100dvh; 
             line-height: 1.5; 
             overflow-x: hidden; 
         } 
@@ -38,167 +38,173 @@
             width: 100%;
             max-width: 480px;
             margin: 0 auto;
-            min-height: 100vh;
+            min-height: 100dvh;
             background: transparent;
             position: relative;
             overflow: hidden;
+            box-shadow: 0 0 2rem rgba(0,0,0,0.05);
         }
         
         /* CENTER POPUP */ 
-        .popup-overlay { position:fixed; inset:0; background:rgba(15,23,42,0.5); backdrop-filter:blur(6px); z-index:3000; display:none; align-items:center; justify-content:center; } 
-        .popup-card { background:var(--surface); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); width:86%; max-width:21.25rem; border-radius:clamp(1.25rem,5vw,1.5rem); padding:clamp(1.5rem,5vw,1.75rem) clamp(1rem,3.5vw,1.25rem); text-align:center; box-shadow:0 1.5rem 3rem rgba(0,0,0,0.15); border:1px solid rgba(255,255,255,0.8); transform:scale(0.88); opacity:0; transition:all 0.32s cubic-bezier(0.34,1.56,0.64,1); } 
+        .popup-overlay { position:fixed; inset:0; background:rgba(15,23,42,0.5); backdrop-filter:blur(6px); z-index:3000; display:none; align-items:center; justify-content:center; padding: 1rem; } 
+        .popup-card { background:var(--surface); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); width:100%; max-width:20rem; border-radius:1.25rem; padding:1.5rem; text-align:center; box-shadow:0 1.5rem 3rem rgba(0,0,0,0.15); border:1px solid rgba(255,255,255,0.8); transform:scale(0.88); opacity:0; transition:all 0.32s cubic-bezier(0.34,1.56,0.64,1); } 
         .popup-overlay.active .popup-card { transform:scale(1); opacity:1; } 
-        .popup-icon { font-size:clamp(2.5rem,8vw,3.4rem); margin-bottom:clamp(0.5rem,2vw,0.625rem); text-shadow: 0 4px 12px rgba(34,197,94,0.2); } 
-        .popup-title { font-size:clamp(1rem,4vw,1.15rem); font-weight:600; color:var(--text-main); margin-bottom:clamp(0.3rem,1.5vw,0.375rem); } 
-        .popup-msg { font-size:clamp(0.85rem,3vw,0.95rem); color:var(--text-muted); line-height:1.45; } 
-        .popup-close { margin-top:clamp(1rem,3.5vw,1.25rem); padding:clamp(0.75rem,2.5vw,0.85rem) clamp(1.75rem,5vw,2rem); background:#eaffea; color:var(--primary-end); border:1px solid var(--primary-start); border-radius:999px; font-weight:600; font-size:clamp(0.85rem,3vw,0.93rem); width:100%; transition: all 0.2s; } 
+        .popup-icon { font-size:3rem; margin-bottom:0.5rem; text-shadow: 0 4px 12px rgba(34,197,94,0.2); } 
+        .popup-title { font-size:1.1rem; font-weight:600; color:var(--text-main); margin-bottom:0.25rem; } 
+        .popup-msg { font-size:0.9rem; color:var(--text-muted); line-height:1.45; } 
+        .popup-close { margin-top:1.25rem; padding:0.75rem 1.5rem; background:#eaffea; color:var(--primary-end); border:1px solid var(--primary-start); border-radius:999px; font-weight:600; font-size:0.9rem; width:100%; transition: all 0.2s; cursor:pointer;} 
         
         /* HEADER + SCREENS */ 
-        .app-header { padding:clamp(0.85rem,3vw,1rem) clamp(1rem,3vw,1.25rem) clamp(0.65rem,2.2vw,0.75rem); background:rgba(255,255,255,0.7); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:100; text-align:center; box-shadow:var(--shadow-sm); } 
-        .app-title { font-family:'Caveat',cursive; font-size:clamp(1.6rem,7vw,2rem); font-weight:700; background:var(--primary-gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; position: relative; } 
-        .app-title::before { content: "🌿 "; font-size: 0.9em; -webkit-text-fill-color: initial; color: var(--primary-start); }
-        .app-title::after { content: " 🌿"; font-size: 0.9em; -webkit-text-fill-color: initial; color: var(--primary-start); }
-        .screen { display:none; padding:clamp(0.75rem,2.5vw,0.875rem); padding-bottom:clamp(5.5rem,14vw,6.5rem); animation:fadeUp 0.35s cubic-bezier(0.34,1.56,0.64,1); } 
+        .app-header { padding: calc(0.75rem + env(safe-area-inset-top)) 1rem 0.75rem; background:rgba(255,255,255,0.85); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:100; text-align:center; box-shadow:var(--shadow-sm); } 
+        .app-title { font-family:'Caveat',cursive; font-size:1.75rem; font-weight:700; background:var(--primary-gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; position: relative; display:inline-block;} 
+        .app-title::before { content: "🌿 "; font-size: 0.8em; -webkit-text-fill-color: initial; color: var(--primary-start); }
+        .app-title::after { content: " 🌿"; font-size: 0.8em; -webkit-text-fill-color: initial; color: var(--primary-start); }
+        .screen { display:none; padding:1rem; padding-bottom:calc(6rem + env(safe-area-inset-bottom)); animation:fadeUp 0.35s cubic-bezier(0.34,1.56,0.64,1); } 
         .screen.active { display:block; } 
         @keyframes fadeUp { from{opacity:0;transform:translateY(1rem)} to{opacity:1;transform:none} } 
         
-        .card { background:var(--surface); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius:clamp(1.25rem,4vw,1.5rem); padding:clamp(1rem,3vw,1.125rem); margin-bottom:clamp(0.85rem,3vw,1rem); border:1px solid rgba(255,255,255,0.9); box-shadow:var(--shadow-sm); } 
+        .card { background:var(--surface); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius:1.25rem; padding:1rem; margin-bottom:1rem; border:1px solid rgba(255,255,255,0.9); box-shadow:var(--shadow-sm); } 
         .card.appear { animation:cardIn 0.45s cubic-bezier(0.34,1.56,0.64,1) forwards; } 
         @keyframes cardIn { from{opacity:0;transform:scale(0.96)} to{opacity:1;transform:none} } 
         
-        .btn { display:flex; align-items:center; justify-content:center; gap:clamp(0.4rem,1.8vw,0.5rem); width:100%; padding:clamp(0.75rem,2.5vw,0.875rem); border-radius:999px; background:var(--primary-gradient); color:white; font-size:clamp(0.95rem,3.5vw,1.05rem); font-weight:600; box-shadow:var(--glow); transition:all 0.2s cubic-bezier(0.34,1.56,0.64,1); border:none; outline:none; cursor:pointer;} 
+        /* COMPACT PREMIUM BUTTONS */
+        .btn { display:flex; align-items:center; justify-content:center; gap:0.5rem; width:100%; padding:0.75rem 1.25rem; border-radius:999px; background:var(--primary-gradient); color:white; font-size:0.95rem; font-weight:600; box-shadow:var(--glow); transition:all 0.2s cubic-bezier(0.34,1.56,0.64,1); border:none; cursor:pointer;} 
         .btn:disabled { opacity:0.6; cursor:not-allowed; box-shadow: none; } 
         .btn:active:not(:disabled) { transform:scale(0.96); box-shadow: 0 0 0.5rem rgba(34,197,94,0.15); } 
-        .btn-outline { background:rgba(255,255,255,0.5); border:1.5px solid var(--primary-start); color:var(--primary-end); display:flex; align-items:center; justify-content:center; gap:clamp(0.4rem,1.8vw,0.5rem); cursor:pointer; font-weight: 600; box-shadow: 0 4px 12px rgba(34,197,94,0.04); } 
+        .btn-outline { background:rgba(255,255,255,0.5); border:1.5px solid var(--primary-start); color:var(--primary-end); display:flex; align-items:center; justify-content:center; gap:0.5rem; cursor:pointer; font-weight: 600; box-shadow: 0 4px 12px rgba(34,197,94,0.04); padding:0.75rem 1.25rem; border-radius:999px; font-size:0.95rem;} 
         
         /* NEW RESULT STYLES */
-        .result-name { font-size:clamp(1.4rem,6vw,1.75rem); font-weight:700; color:var(--text-main); margin-bottom:clamp(0.4rem,2vw,0.5rem); line-height:1.2; } 
-        .badge-container { display:flex; gap:clamp(0.4rem,1.8vw,0.5rem); flex-wrap:wrap; margin-bottom:clamp(1rem,3.5vw,1.25rem); padding-bottom:clamp(0.85rem,3vw,1rem); border-bottom:1px dashed var(--border); }
-        .badge { padding:clamp(0.25rem,1.2vw,0.35rem) clamp(0.75rem,2.5vw,0.875rem); border-radius:999px; font-size:clamp(0.75rem,2.5vw,0.85rem); font-weight:600; letter-spacing:0.5px; text-transform:uppercase; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.5); }
+        .result-name { font-size:1.5rem; font-weight:700; color:var(--text-main); margin-bottom:0.5rem; line-height:1.2; } 
+        .badge-container { display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1rem; padding-bottom:1rem; border-bottom:1px dashed var(--border); }
+        .badge { padding:0.25rem 0.75rem; border-radius:999px; font-size:0.75rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.5); }
         .category-badge { background:rgba(34,197,94,0.12); color:var(--primary-end); border: 1px solid rgba(34,197,94,0.2); }
         .type-badge { background:rgba(249,115,22,0.12); color:var(--accent); border: 1px solid rgba(249,115,22,0.2); }
         
-        .result-card { background:rgba(255,255,255,0.6); border:1px solid rgba(255,255,255,0.8); border-radius:clamp(1rem,3vw,1.25rem); padding:clamp(0.85rem,3vw,1rem); margin-bottom:clamp(0.75rem,2.5vw,0.875rem); transition:transform 0.2s; box-shadow:0 2px 8px rgba(34,197,94,0.04); }
-        .result-card-header { display:flex; align-items:center; gap:clamp(0.5rem,2vw,0.625rem); margin-bottom:clamp(0.5rem,2vw,0.625rem); border-bottom:1px solid rgba(34,197,94,0.08); padding-bottom:clamp(0.4rem,1.8vw,0.5rem); }
-        .result-icon { font-size:clamp(1.15rem,4vw,1.3rem); }
-        .result-label { font-size:clamp(0.9rem,3.2vw,1rem); font-weight:600; color:var(--text-main); }
+        .result-card { background:rgba(255,255,255,0.6); border:1px solid rgba(255,255,255,0.8); border-radius:1rem; padding:1rem; margin-bottom:0.75rem; transition:transform 0.2s; box-shadow:0 2px 8px rgba(34,197,94,0.04); }
+        .result-card-header { display:flex; align-items:center; gap:0.5rem; margin-bottom:0.5rem; border-bottom:1px solid rgba(34,197,94,0.08); padding-bottom:0.5rem; }
+        .result-icon { font-size:1.2rem; }
+        .result-label { font-size:0.95rem; font-weight:600; color:var(--text-main); }
         
-        .result-value-list { list-style:none; padding-left:0; margin:0; font-size:clamp(0.85rem,3vw,0.95rem); line-height:1.6; color:var(--text-muted); }
-        .result-value-list li { position:relative; padding-left:clamp(1rem,3.5vw,1.25rem); margin-bottom:clamp(0.4rem,1.8vw,0.5rem); }
+        .result-value-list { list-style:none; padding-left:0; margin:0; font-size:0.9rem; line-height:1.6; color:var(--text-muted); }
+        .result-value-list li { position:relative; padding-left:1.25rem; margin-bottom:0.5rem; }
         .result-value-list li:last-child { margin-bottom:0; }
-        .result-value-list li::before { content:"🌿"; position:absolute; left:0; top: 0.1rem; color:var(--primary-start); font-size:clamp(0.7rem,2.5vw,0.8rem); opacity: 0.7;}
+        .result-value-list li::before { content:"🌿"; position:absolute; left:0; top: 0.1rem; color:var(--primary-start); font-size:0.8rem; opacity: 0.7;}
 
-        #scan-loader { text-align:center; padding:clamp(3rem,10vw,3.4375rem) clamp(1rem,3.5vw,1.25rem); } 
-      .spinner {
-    box-shadow: none;
-    border: 4px solid #e5e7eb;
-    border-top-color: var(--primary-end);
-}
+        #scan-loader { text-align:center; padding:3rem 1rem; } 
+        .spinner { box-shadow: none; border: 4px solid #e5e7eb; border-top-color: var(--primary-end); width: 40px; height: 40px; border-radius: 50%; margin: 0 auto 1rem; animation: spin 1s linear infinite;}
         @keyframes spin { to{transform:rotate(360deg)} } 
-        .empty-state { text-align:center; padding:clamp(4rem,12vw,5rem) clamp(1rem,3.5vw,1.25rem) clamp(3rem,8vw,3.125rem); color:var(--text-muted); } 
+        .empty-state { text-align:center; padding:4rem 1rem; color:var(--text-muted); } 
         
         /* BOTTOM NAV - Floating Style */
-        .bottom-nav { position:fixed; bottom:clamp(1rem,3.5vw,1.5rem); left:50%; transform:translateX(-50%); width:calc(100% - clamp(2rem,6vw,2.5rem)); max-width:24rem; background:rgba(255,255,255,0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border:1px solid rgba(255,255,255,0.9); border-radius:999px; display:flex; justify-content:space-around; padding:clamp(0.4rem,1.8vw,0.5rem) clamp(0.4rem,1.8vw,0.5rem); box-shadow:0 1rem 2rem rgba(34,197,94,0.12); z-index:100; } 
-        .nav-item { display:flex; flex-direction:column; align-items:center; gap:clamp(0.15rem,0.8vw,0.2rem); padding:clamp(0.4rem,1.8vw,0.5rem) clamp(0.75rem,2.8vw,1rem); border-radius:999px; color:var(--text-muted); font-size:clamp(0.75rem,3vw,0.88rem); cursor:pointer; transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1); } 
-        .nav-item i { font-size:clamp(1.15rem,4.5vw,1.25rem); margin-bottom: 2px; } 
+        .bottom-nav { position:fixed; bottom:calc(1rem + env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%); width:calc(100% - 2rem); max-width:440px; background:rgba(255,255,255,0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border:1px solid rgba(255,255,255,0.9); border-radius:999px; display:flex; justify-content:space-around; padding:0.4rem; box-shadow:0 1rem 2rem rgba(34,197,94,0.12); z-index:100; } 
+        .nav-item { display:flex; flex-direction:column; align-items:center; gap:0.2rem; padding:0.5rem 1rem; border-radius:999px; color:var(--text-muted); font-size:0.8rem; cursor:pointer; transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1); } 
+        .nav-item i { font-size:1.2rem; margin-bottom: 2px; } 
         .nav-item.active { background:var(--primary-gradient); color:white; box-shadow:var(--glow); transform: translateY(-4px); } 
         .nav-item.active i { transform:scale(1.15); } 
         
         /* ACTION SHEET */
         .action-overlay { position:fixed; inset:0; background:rgba(15,23,42,0.4); backdrop-filter:blur(4px); z-index:1999; opacity:0; visibility:hidden; transition:opacity 0.3s; } 
         .action-overlay.active { opacity:1; visibility:visible; } 
-        .action-sheet { position:fixed; bottom:-100%; left:50%; transform:translateX(-50%); width:100%; max-width:30rem; background:var(--surface); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid rgba(255,255,255,0.9); border-radius:clamp(1.5rem,5vw,2rem) clamp(1.5rem,5vw,2rem) 0 0; padding:clamp(1rem,3vw,1.25rem) clamp(1.25rem,4vw,1.5rem) clamp(2rem,7vw,2.5rem); z-index:2000; box-shadow:0 -1rem 3rem rgba(0,0,0,0.1); transition:bottom 0.4s cubic-bezier(0.32,0.72,0,1); } 
+        .action-sheet { position:fixed; bottom:-100%; left:50%; transform:translateX(-50%); width:100%; max-width:480px; background:var(--surface); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid rgba(255,255,255,0.9); border-radius:1.5rem 1.5rem 0 0; padding:1rem 1.25rem calc(1.5rem + env(safe-area-inset-bottom)); z-index:2000; box-shadow:0 -1rem 3rem rgba(0,0,0,0.1); transition:bottom 0.4s cubic-bezier(0.32,0.72,0,1); } 
         .action-sheet.active { bottom:0; } 
-        .scan-limit { text-align:center; margin:clamp(0.65rem,2.5vw,0.85rem) 0 clamp(1rem,3.5vw,1.25rem); color:var(--text-muted); font-size:clamp(0.85rem,3vw,0.95rem); font-weight:500; } 
+        .scan-limit { text-align:center; margin:0.75rem 0 1rem; color:var(--text-muted); font-size:0.85rem; font-weight:500; } 
         input[type="file"] { display:none; } 
         
         /* CAMERA PREVIEW */ 
-        #camera-container { display: none; margin-bottom: clamp(0.75rem,2.5vw,0.875rem); } 
-        .camera-wrapper { position: relative; border-radius: clamp(1rem,4vw,1.5rem); overflow: hidden; background: #000; box-shadow: var(--shadow-sm); margin-bottom: clamp(0.85rem,3vw,1rem); border: 2px solid var(--primary-start); } 
+        #camera-container { display: none; margin-bottom: 1rem; } 
+        .camera-wrapper { position: relative; border-radius: 1.25rem; overflow: hidden; background: #000; box-shadow: var(--shadow-sm); margin-bottom: 1rem; border: 2px solid var(--primary-start); } 
         #camera-preview { width: 100%; max-height: 55vh; object-fit: cover; display: block; } 
-        .capture-overlay { position: absolute; bottom: clamp(1.5rem,5vw,2rem); left: 50%; transform: translateX(-50%); z-index: 10; width: 75%; max-width: 18.75rem; } 
+        .capture-overlay { position: absolute; bottom: 1.5rem; left: 50%; transform: translateX(-50%); z-index: 10; width: 75%; max-width: 16rem; } 
 
-        /* CHAT UI STYLES */
-      .chat-overlay {
-    backdrop-filter: none !important;
-    background: rgba(0,0,0,0.2);
-}
-       .chat-sheet {
-    height: 100dvh;
-    max-height: 100dvh;
-    display: flex;
-    flex-direction: column;
-}
-        .chat-header { padding:clamp(1rem,3.5vw,1.25rem); border-bottom:1px solid rgba(34,197,94,0.15); display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.8); backdrop-filter: blur(10px); }
-        .chat-header h3 { margin:0; font-size:clamp(1.1rem,4.5vw,1.3rem); color:var(--primary-end); display:flex; align-items:center; gap:clamp(0.5rem,2vw,0.625rem); font-weight: 700; }
-        .chat-close-btn { background:rgba(34,197,94,0.1); border:none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size:clamp(1.2rem,4.5vw,1.4rem); color:var(--primary-end); cursor:pointer; transition: all 0.2s; }
+        /* PERFECT CHAT UI STYLES */
+        .chat-overlay { backdrop-filter: none !important; background: rgba(0,0,0,0.4); }
         
-       .chat-body {
-  flex:1;
-  overflow-y:auto;
-  min-height: 0; /* 🔥 IMPORTANT FIX */
-
-  padding:clamp(1rem,3.5vw,1.25rem);
-  display:flex;
-  flex-direction:column;
-  gap:clamp(0.85rem,3vw,1rem);
-  background:transparent;
-  scroll-behavior:smooth;
-}
+        .chat-sheet {
+            height: 100dvh !important;
+            max-height: 100dvh !important;
+            border-radius: 0 !important;
+            padding: 0 !important;
+            display: flex;
+            flex-direction: column;
+            background: var(--surface-solid);
+        }
         
-        .chat-bubble { max-width:85%; padding:clamp(0.75rem,2.5vw,0.875rem) clamp(1rem,3.5vw,1.25rem); border-radius:clamp(1.25rem,4.5vw,1.5rem); font-size:clamp(0.9rem,3.2vw,1rem); line-height:1.5; word-wrap:break-word; animation:fadeUp 0.3s; box-shadow: var(--shadow-sm); }
-        .chat-bubble.ai { background:var(--surface-solid); color:var(--text-main); border:1px solid rgba(34,197,94,0.1); border-bottom-left-radius:0.35rem; align-self:flex-start; }
-        .chat-bubble.user { background:var(--primary-gradient); color:white; border-bottom-right-radius:0.35rem; align-self:flex-end; }
-        .chat-bubble.system { align-self:center; font-size:clamp(0.75rem,2.5vw,0.82rem); color:var(--primary-end); background:rgba(34,197,94,0.08); border:none; border-radius: 999px; box-shadow:none; padding:clamp(0.3rem,1.2vw,0.4rem) clamp(1rem,3vw,1.25rem); text-align:center; }
-        .typing-indicator { display:flex; gap:clamp(0.25rem,1.2vw,0.3rem); padding:clamp(0.85rem,3vw,1rem) clamp(1.25rem,4vw,1.5rem); align-self:flex-start; background:var(--surface-solid); border:1px solid rgba(34,197,94,0.1); border-radius:clamp(1.25rem,4.5vw,1.5rem); border-bottom-left-radius:0.35rem; box-shadow: var(--shadow-sm); }
-        .typing-dot { width:clamp(0.4rem,1.5vw,0.45rem); height:clamp(0.4rem,1.5vw,0.45rem); background:var(--primary-start); border-radius:50%; animation:typing 1.4s infinite ease-in-out both; }
+        .chat-header { 
+            padding: calc(1rem + env(safe-area-inset-top)) 1rem 1rem; 
+            border-bottom:1px solid rgba(34,197,94,0.15); 
+            display:flex; 
+            justify-content:space-between; 
+            align-items:center; 
+            background:rgba(255,255,255,0.95); 
+            backdrop-filter: blur(10px); 
+            flex-shrink: 0;
+        }
+        .chat-header h3 { margin:0; font-size:1.15rem; color:var(--primary-end); display:flex; align-items:center; gap:0.5rem; font-weight: 700; }
+        .chat-close-btn { background:rgba(34,197,94,0.1); border:none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size:1.2rem; color:var(--primary-end); cursor:pointer; transition: all 0.2s; }
+        
+        .chat-body {
+            flex: 1 1 auto;
+            overflow-y: auto;
+            min-height: 0; 
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            background: var(--bg);
+            scroll-behavior: smooth;
+        }
+        
+        .chat-bubble { max-width:85%; padding:0.75rem 1rem; border-radius:1.25rem; font-size:0.95rem; line-height:1.5; word-wrap:break-word; animation:fadeUp 0.3s; box-shadow: var(--shadow-sm); }
+        .chat-bubble.ai { background:var(--surface-solid); color:var(--text-main); border:1px solid rgba(34,197,94,0.1); border-bottom-left-radius:0.25rem; align-self:flex-start; }
+        .chat-bubble.user { background:var(--primary-gradient); color:white; border-bottom-right-radius:0.25rem; align-self:flex-end; }
+        .chat-bubble.system { align-self:center; font-size:0.8rem; color:var(--primary-end); background:rgba(34,197,94,0.08); border:none; border-radius: 999px; box-shadow:none; padding:0.4rem 1rem; text-align:center; }
+        .typing-indicator { display:flex; gap:0.3rem; padding:0.75rem 1rem; align-self:flex-start; background:var(--surface-solid); border:1px solid rgba(34,197,94,0.1); border-radius:1.25rem; border-bottom-left-radius:0.25rem; box-shadow: var(--shadow-sm); }
+        .typing-dot { width:0.4rem; height:0.4rem; background:var(--primary-start); border-radius:50%; animation:typing 1.4s infinite ease-in-out both; }
         .typing-dot:nth-child(1) { animation-delay:-0.32s; }
         .typing-dot:nth-child(2) { animation-delay:-0.16s; }
         @keyframes typing { 0%, 80%, 100% { transform:scale(0.3); opacity: 0.5; } 40% { transform:scale(1); opacity: 1; } }
         
-      .chat-input-area {
-  padding: 
-    clamp(0.85rem,3vw,1rem) 
-    clamp(1rem,3.5vw,1.25rem) 
-    calc(clamp(1.5rem,5vw,2rem) + env(safe-area-inset-bottom));
-
-  border-top:1px solid rgba(34,197,94,0.15);
-  display:flex;
-  gap:clamp(0.65rem,2.5vw,0.85rem);
-  background:rgba(255,255,255,0.9);
-  backdrop-filter: blur(10px);
-  align-items:center;
-}
-        .chat-mic-btn { width:clamp(2.8rem,9vw,3rem); height:clamp(2.8rem,9vw,3rem); border-radius:50%; border:1px solid rgba(34,197,94,0.2); background:#eaffea; color:var(--primary-end); display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:clamp(1.1rem,4vw,1.25rem); transition:all 0.2s; cursor:pointer;}
+        .chat-input-area {
+            flex-shrink: 0;
+            padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom));
+            border-top:1px solid rgba(34,197,94,0.15);
+            display:flex;
+            gap:0.75rem;
+            background:rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            align-items:center;
+        }
+        .chat-mic-btn { width:2.75rem; height:2.75rem; border-radius:50%; border:1px solid rgba(34,197,94,0.2); background:#eaffea; color:var(--primary-end); display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:1.1rem; transition:all 0.2s; cursor:pointer;}
         .chat-mic-btn.listening { background:#fff7ed; color:var(--accent); border-color:#fed7aa; animation:pulse-mic 1.5s infinite; }
         @keyframes pulse-mic { 0% {box-shadow:0 0 0 0 rgba(249,115,22,0.4);} 70% {box-shadow:0 0 0 12px rgba(249,115,22,0);} 100% {box-shadow:0 0 0 0 rgba(249,115,22,0);} }
-        .chat-input-box { flex:1; border:1px solid rgba(34,197,94,0.2); border-radius:999px; padding:clamp(0.75rem,2.5vw,0.875rem) clamp(1.25rem,4vw,1.5rem); outline:none; font-family:inherit; font-size:clamp(0.95rem,3.5vw,1.05rem); background:#ffffff; transition:all 0.2s; user-select:text; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
+        .chat-input-box { flex:1; border:1px solid rgba(34,197,94,0.2); border-radius:999px; padding:0.7rem 1.25rem; font-family:inherit; font-size:0.95rem; background:#ffffff; transition:all 0.2s; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
         .chat-input-box:focus { border-color:var(--primary-end); box-shadow: 0 0 0 3px rgba(34,197,94,0.15); }
-        .chat-send-btn { width:clamp(2.8rem,9vw,3rem); height:clamp(2.8rem,9vw,3rem); border-radius:50%; background:var(--primary-gradient); color:white; border:none; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:clamp(1.1rem,4vw,1.25rem); box-shadow:var(--glow); cursor:pointer;}
+        .chat-send-btn { width:2.75rem; height:2.75rem; border-radius:50%; background:var(--primary-gradient); color:white; border:none; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:1.1rem; box-shadow:var(--glow); cursor:pointer;}
         .chat-send-btn:disabled { opacity:0.5; cursor:not-allowed; box-shadow: none; }
 
-        /* ================== RIPPLE EFFECT STYLES ================== */
+        /* CLEAN FLAT SETTINGS UI */
+        .settings-container {
+            padding: 0 0.5rem;
+        }
+        .settings-list-item {
+            display:flex; justify-content:space-between; align-items:center; 
+            padding: 1rem 0; border-bottom:1px solid rgba(34,197,94,0.15);
+        }
+        .settings-group {
+            display:flex; flex-direction:column; gap:0.75rem; margin-top: 1.5rem;
+        }
+        
+        /* RIPPLE EFFECT */
         span.ripple {
-            position: absolute;
-            border-radius: 50%;
-            transform: scale(0);
-            animation: ripple-anim 0.6s linear;
-            background-color: rgba(255, 255, 255, 0.4);
+            position: absolute; border-radius: 50%; transform: scale(0);
+            animation: ripple-anim 0.6s linear; background-color: rgba(255, 255, 255, 0.4);
             pointer-events: none;
         }
-        /* Darker ripple for light/outlined elements */
-        .btn-outline span.ripple, 
-        .nav-item:not(.active) span.ripple, 
-        .chat-mic-btn:not(.listening) span.ripple,
-        .popup-close span.ripple {
+        .btn-outline span.ripple, .nav-item:not(.active) span.ripple, 
+        .chat-mic-btn:not(.listening) span.ripple, .popup-close span.ripple {
             background-color: rgba(34, 197, 94, 0.15); 
         }
-        @keyframes ripple-anim {
-            to {
-                transform: scale(4);
-                opacity: 0;
-            }
-        }
+        @keyframes ripple-anim { to { transform: scale(4); opacity: 0; } }
     </style>
 </head>
 <body>
@@ -207,13 +213,6 @@
         <div class="app-title" id="app-title">Scan Aushadhi</div> 
     </header> 
     
-    <div id="tab-loader" class="screen">
-        <div class="empty-state" style="padding-top: clamp(6rem, 20vw, 8rem);">
-            <div class="spinner"></div>
-            <p id="lbl-tab-loading" style="color: var(--primary-end); font-weight: 600; margin-top: 1rem; font-size: clamp(1rem, 4vw, 1.15rem);">Loading...</p>
-        </div>
-    </div>
-
     <div id="home" class="screen active">
         <div id="history-container"></div>
     </div> 
@@ -229,7 +228,7 @@
                     <button id="capture-btn" class="btn"><i class="fas fa-camera"></i> Capture Photo</button> 
                 </div> 
             </div> 
-            <button onclick="stopCamera()" class="btn btn-outline" style="border-radius:999px; padding:clamp(0.75rem,2.5vw,0.875rem);">✕ Close Camera</button> 
+            <button onclick="stopCamera()" class="btn-outline" style="width: 100%;">✕ Close Camera</button> 
         </div> 
         
         <canvas id="image-canvas" style="display:none;"></canvas> 
@@ -239,38 +238,35 @@
         </div> 
         <div id="scan-result" class="card" style="display:none;"></div> 
     </div> 
-
    
-    
     <div id="settings" class="screen"> 
-        <div class="card"> 
-            <div class="setting-item" style="display:flex;justify-content:space-between;align-items:center;padding:clamp(0.85rem,3vw,1rem) 0;border-bottom:1px solid rgba(34,197,94,0.15);"> 
-                <div style="display:flex;align-items:center;gap:clamp(0.65rem,2.5vw,0.85rem);"><i class="fas fa-language" style="color:var(--primary-end); font-size: 1.2rem;"></i><div><strong id="lbl-language">Language</strong><p id="lbl-lang-desc" style="font-size:clamp(0.75rem,2.8vw,0.85rem);color:var(--text-muted);">Output language</p></div></div> 
-                <select id="language-select" style="padding:clamp(0.4rem,1.8vw,0.5rem) clamp(0.75rem,2.5vw,0.875rem); border-radius:999px; border:1px solid var(--primary-start); color: var(--primary-end); font-weight:500; background:rgba(255,255,255,0.8); outline:none;"><option value="en">English</option><option value="hi">हिन्दी</option></select> 
+        <div class="settings-container"> 
+            <div class="settings-list-item"> 
+                <div style="display:flex;align-items:center;gap:0.75rem;"><i class="fas fa-language" style="color:var(--primary-end); font-size: 1.25rem;"></i><div><strong id="lbl-language">Language</strong><p id="lbl-lang-desc" style="font-size:0.8rem;color:var(--text-muted); margin-top:-2px;">Output language</p></div></div> 
+                <select id="language-select" style="padding:0.4rem 0.75rem; border-radius:999px; border:1px solid var(--primary-start); color: var(--primary-end); font-weight:500; background:rgba(255,255,255,0.8); outline:none; font-size:0.9rem;"><option value="en">English</option><option value="hi">हिन्दी</option></select> 
             </div> 
-            <button onclick="clearHistory()" class="btn btn-outline" style="width:100%;margin-top:clamp(0.65rem,2.5vw,0.85rem);justify-content:flex-start;gap:clamp(0.65rem,2.5vw,0.85rem);color:#e11d48; border-color: rgba(225,29,72,0.3); background: rgba(225,29,72,0.05); border-radius:999px; padding:clamp(0.75rem,2.5vw,0.875rem);"><i class="fas fa-trash-can"></i> <span id="lbl-clear-history">Clear History</span></button> 
+            <button onclick="clearHistory()" class="btn-outline" style="width:100%;margin-top:1rem;justify-content:flex-start;gap:0.75rem;color:#e11d48; border-color: rgba(225,29,72,0.3); background: rgba(225,29,72,0.05);"><i class="fas fa-trash-can"></i> <span id="lbl-clear-history">Clear History</span></button> 
             
-            <div style="margin-top:clamp(1.25rem,4vw,1.5rem);display:flex;flex-direction:column;gap:clamp(0.5rem,2vw,0.625rem);"> 
-                <button onclick="shareApp()" class="btn btn-outline" style="justify-content:flex-start;gap:clamp(0.65rem,2.5vw,0.85rem); border-radius:999px; padding:clamp(0.75rem,2.5vw,0.875rem);">📤 <span id="lbl-share">Share App</span></button>
-                <button onclick="rateApp()" class="btn btn-outline" style="justify-content:flex-start;gap:clamp(0.65rem,2.5vw,0.85rem); border-radius:999px; padding:clamp(0.75rem,2.5vw,0.875rem);">⭐ <span id="lbl-rate">Rate App</span></button>
-                
-                <a href="privacy.html" class="btn btn-outline" style="justify-content:flex-start;gap:clamp(0.65rem,2.5vw,0.85rem); border-radius:999px; padding:clamp(0.75rem,2.5vw,0.875rem); text-decoration:none;">🔒 <span id="lbl-privacy">Privacy Policy</span></a> 
-                <a href="terms.html" class="btn btn-outline" style="justify-content:flex-start;gap:clamp(0.65rem,2.5vw,0.85rem); border-radius:999px; padding:clamp(0.75rem,2.5vw,0.875rem); text-decoration:none;">📜 <span id="lbl-terms">Terms & Conditions</span></a> 
-                <a href="contact.html" class="btn btn-outline" style="justify-content:flex-start;gap:clamp(0.65rem,2.5vw,0.85rem); border-radius:999px; padding:clamp(0.75rem,2.5vw,0.875rem); text-decoration:none;">📞 <span id="lbl-support">Contact Support</span></a> 
-                <button onclick="showAbout()" class="btn btn-outline" style="justify-content:flex-start;gap:clamp(0.65rem,2.5vw,0.85rem); border-radius:999px; padding:clamp(0.75rem,2.5vw,0.875rem);">ℹ️ <span id="lbl-about">About App</span></button> 
+            <div class="settings-group"> 
+                <button onclick="shareApp()" class="btn-outline" style="justify-content:flex-start;">📤 <span id="lbl-share">Share App</span></button>
+                <button onclick="rateApp()" class="btn-outline" style="justify-content:flex-start;">⭐ <span id="lbl-rate">Rate App</span></button>
+                <a href="privacy.html" class="btn-outline" style="justify-content:flex-start; text-decoration:none;">🔒 <span id="lbl-privacy">Privacy Policy</span></a> 
+                <a href="terms.html" class="btn-outline" style="justify-content:flex-start; text-decoration:none;">📜 <span id="lbl-terms">Terms & Conditions</span></a> 
+                <a href="contact.html" class="btn-outline" style="justify-content:flex-start; text-decoration:none;">📞 <span id="lbl-support">Contact Support</span></a> 
+                <button onclick="showAbout()" class="btn-outline" style="justify-content:flex-start;">ℹ️ <span id="lbl-about">About App</span></button> 
             </div> 
             
-            <div style="margin-top:clamp(1.75rem,6vw,2rem);text-align:center;font-size:clamp(0.75rem,2.8vw,0.85rem);color:var(--text-muted);"><i class="fas fa-leaf" style="color:var(--primary-start)"></i> Informational only • Consult doctor</div> 
-            <div style="text-align:center;margin-top:clamp(1rem,3.5vw,1.25rem);opacity:0.7;font-size:clamp(0.75rem,2.8vw,0.85rem);line-height:1.5;">Designed & Developed by NexCod Developer's<br><strong style="color:var(--primary-end);">Team Nexcod</strong></div> 
+            <div style="margin-top:2rem;text-align:center;font-size:0.85rem;color:var(--text-muted);"><i class="fas fa-leaf" style="color:var(--primary-start)"></i> Informational only • Consult doctor</div> 
+            <div style="text-align:center;margin-top:1rem;opacity:0.7;font-size:0.8rem;line-height:1.5;">Designed & Developed by NexCod Developer's<br><strong style="color:var(--primary-end);">Team Nexcod</strong></div> 
         </div> 
     </div> 
     
     <div class="action-overlay" id="action-overlay" onclick="toggleActionSheet(false)"></div> 
     <div class="action-sheet" id="action-sheet"> 
-        <div style="width:clamp(3rem,10vw,4rem);height:clamp(0.35rem,1.2vw,0.4rem);background:var(--primary-start);opacity:0.4;margin:0 auto clamp(1rem,3.5vw,1.25rem);border-radius:999px;"></div> 
-        <h2 id="lbl-choose-scan" style="text-align:center;font-weight:700;color:var(--primary-end);margin-bottom:clamp(1rem,3.5vw,1.25rem);">Choose Option</h2> 
+        <div style="width:3.5rem;height:0.35rem;background:var(--primary-start);opacity:0.4;margin:0 auto 1.25rem;border-radius:999px;"></div> 
+        <h2 id="lbl-choose-scan" style="text-align:center;font-weight:700;color:var(--primary-end);margin-bottom:1.25rem;">Choose Option</h2> 
         <button onclick="startCamera(); toggleActionSheet(false)" class="btn"> <i class="fas fa-camera"></i> <span id="lbl-scan-cam">Scan with Camera</span> </button> 
-        <label for="gallery-input" class="btn btn-outline" onclick="toggleActionSheet(false)" style="margin-top:clamp(0.75rem,2.5vw,0.875rem); border-radius:999px; padding:clamp(0.75rem,2.5vw,0.875rem);"> <i class="fas fa-image"></i> <span id="lbl-upload-img">Upload Image</span> </label> 
+        <label for="gallery-input" class="btn-outline" onclick="toggleActionSheet(false)" style="margin-top:0.75rem;"> <i class="fas fa-image"></i> <span id="lbl-upload-img">Upload Image</span> </label> 
         <input type="file" id="gallery-input" accept="image/*"> 
     </div> 
 
@@ -281,7 +277,7 @@
             <button class="chat-close-btn" onclick="closeChat()"><i class="fas fa-times"></i></button>
         </div>
         <div class="chat-body" id="chat-body">
-            </div>
+        </div>
         <div class="chat-input-area">
             <button class="chat-mic-btn" id="chat-mic-btn" onclick="startVoiceInput()"><i class="fas fa-microphone"></i></button>
             <input type="text" class="chat-input-box" id="chat-input" placeholder="Type a message..." onkeypress="handleChatKeyPress(event)" oninput="handleChatInput()">
@@ -301,7 +297,6 @@
     <nav class="bottom-nav"> 
         <a class="nav-item active" onclick="switchTab('home',this)"><i class="fas fa-house-medical"></i><span id="nav-home">Home</span></a> 
         <a class="nav-item" onclick="switchTab('scan',this)"><i class="fas fa-leaf"></i><span id="nav-scan">Scan</span></a> 
-       
         <a class="nav-item" onclick="switchTab('settings',this)"><i class="fas fa-gear"></i><span id="nav-settings">Settings</span></a> 
     </nav>
 </div>
@@ -342,8 +337,7 @@ const t = {
         askMore:"Ask More", welcomeChat:"Namaste 🙏 How can I help you further with this product?",
         chatLimit:"Chat limit reached. Please scan again.", errorChat:"Something went wrong. Try again.",
         typeMessage:"Type a message...", chatTitle:"AI Assistant", voiceNotSupported:"Voice input not supported",
-        share:"Share App", rate:"Rate App", toolsHeading: "Smart Tools",
-        prepReader: "Prescription Reader", tabLoading: "Loading..."
+        share:"Share App", rate:"Rate App"
     },
     hi: {
         appTitle:"स्कैन औषधि", scanMainBtn:"औषधि स्कैन करें", chooseScan:"विकल्प चुनें",
@@ -361,8 +355,7 @@ const t = {
         askMore:"और पूछें", welcomeChat:"नमस्ते 🙏 बताइए मैं आपकी और क्या मदद कर सकता हूँ?",
         chatLimit:"चैट सीमा समाप्त। कृपया दोबारा स्कैन करें।", errorChat:"कुछ गलत हो गया। पुनः प्रयास करें।",
         typeMessage:"संदेश लिखें...", chatTitle:"AI सहायक", voiceNotSupported:"वॉयस इनपुट समर्थित नहीं है",
-        share:"ऐप साझा करें", rate:"ऐप रेट करें", toolsHeading: "स्मार्ट टूल्स",
-        prepReader: "प्रिस्क्रिप्शन रीडर", tabLoading: "लोड हो रहा है..."
+        share:"ऐप साझा करें", rate:"ऐप रेट करें"
     }
 };
 
@@ -412,7 +405,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (savedScan) {
         try {
             currentScanContext = JSON.parse(savedScan);
-            // Switch to scan tab automatically and show result without adding duplicate history
             switchTab('scan', document.querySelectorAll('.nav-item')[1]);
             showResult(currentScanContext, true); 
         } catch (e) {
@@ -428,7 +420,6 @@ function applyLanguage(lang) {
     
     document.getElementById('nav-home').textContent = t[lang].appTitle === "स्कैन औषधि" ? "होम" : "Home";
     document.getElementById('nav-scan').textContent = t[lang].appTitle === "स्कैन औषधि" ? "स्कैन" : "Scan";
-   
     document.getElementById('nav-settings').textContent = t[lang].appTitle === "स्कैन औषधि" ? "सेटिंग्स" : "Settings";
 
     document.querySelectorAll('[id^="lbl-"]').forEach(el => {
@@ -475,19 +466,9 @@ function switchTab(id, el) {
     
     document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
     el.classList.add('active');
+    
     document.querySelectorAll('.screen').forEach(e => e.classList.remove('active'));
-
-    if (id === 'home') {
-        document.getElementById(id).classList.add('active');
-    } else {
-        document.getElementById('tab-loader').classList.add('active');
-        setTimeout(() => {
-            if (el.classList.contains('active')) {
-                document.getElementById('tab-loader').classList.remove('active');
-                document.getElementById(id).classList.add('active');
-            }
-        }, 1000);
-    }
+    document.getElementById(id).classList.add('active');
 }
 
 // CAMERA & FILE UPLOAD
@@ -617,7 +598,7 @@ async function callBackend(base64) {
         localStorage.removeItem("chatHistory");
         chatHistory = [];
 
-        setTimeout(() => showResult(parsed, false), 700);
+        setTimeout(() => showResult(parsed, false), 300);
 
     } catch (error) {
         resetLoader(loaderEl);
@@ -671,8 +652,8 @@ function showResult(data, isRestore = false) {
     }
 
     html += `
-    <div style="display:flex; gap:clamp(0.65rem,2.5vw,0.85rem); margin-top:clamp(1.25rem,4vw,1.5rem);">
-        <button class="btn btn-tts btn-outline" onclick="startVoiceChat()" style="flex:1; border-radius:999px; padding:clamp(0.75rem,2.5vw,0.875rem);">
+    <div style="display:flex; gap:0.75rem; margin-top:1.5rem;">
+        <button class="btn-outline" onclick="startVoiceChat()" style="flex:1;">
             <i class="fas fa-microphone"></i> <span>${t[state.lang].listen}</span>
         </button>
         <button class="btn" onclick="openChat()" style="flex:1;">
@@ -740,7 +721,10 @@ function openChat() {
     input.disabled = false;
     document.getElementById('chat-mic-btn').disabled = false;
     handleChatInput();
-    setTimeout(() => input.focus(), 300);
+    setTimeout(() => {
+        body.scrollTop = body.scrollHeight;
+        input.focus();
+    }, 300);
 }
 
 function closeChat() {
@@ -813,14 +797,13 @@ async function sendMessage() {
     }
 }
 
-// ... Keep existing utility functions (renderHistory, clearHistory, animateDots, voice input logic, ripple effects) identical below ...
 function renderHistory() {
     const cont = document.getElementById('history-container');
     if (!state.history.length) {
-        cont.innerHTML = `<div class="empty-state"><i class="fas fa-prescription-bottle-medical" style="font-size:clamp(3.5rem,12vw,4.8rem);color:var(--primary-start);opacity:0.2"></i><p style="margin-top: 1rem; font-weight: 500;">${t[state.lang].empty}</p></div>`;
+        cont.innerHTML = `<div class="empty-state"><i class="fas fa-prescription-bottle-medical" style="font-size:4rem;color:var(--primary-start);opacity:0.2"></i><p style="margin-top: 1rem; font-weight: 500;">${t[state.lang].empty}</p></div>`;
         return;
     }
-    cont.innerHTML = state.history.map(i=>`<div class="card"><div style="display:flex;gap:clamp(0.85rem,3vw,1rem);align-items:center;"><span style="font-size:clamp(2rem,8vw,2.5rem); text-shadow: 0 4px 12px rgba(34,197,94,0.15);">💊</span><div><strong style="font-size:clamp(1rem,4vw,1.15rem);color:var(--text-main);">${i.name}</strong><br><small style="color:var(--text-muted); font-weight: 500;">📅 ${i.date}</small></div></div></div>`).join('');
+    cont.innerHTML = state.history.map(i=>`<div class="card"><div style="display:flex;gap:1rem;align-items:center;"><span style="font-size:2.5rem; text-shadow: 0 4px 12px rgba(34,197,94,0.15);">💊</span><div><strong style="font-size:1.1rem;color:var(--text-main);">${i.name}</strong><br><small style="color:var(--text-muted); font-weight: 500;">📅 ${i.date}</small></div></div></div>`).join('');
 }
 
 function clearHistory() {
@@ -937,7 +920,7 @@ function showAbout() { showNotification("Scan Aushadhi Premium\nSecure • High 
 
 // --- Ripple Effect ---
 document.addEventListener('click', function(e) {
-    const target = e.target.closest('.btn, .btn-outline, .nav-item, .chat-mic-btn, .chat-send-btn, .popup-close, label.btn');
+    const target = e.target.closest('.btn, .btn-outline, .nav-item, .chat-mic-btn, .chat-send-btn, .popup-close, label.btn-outline');
     if (!target) return;
     if (window.getComputedStyle(target).position === 'static') target.style.position = 'relative';
     target.style.overflow = 'hidden';
@@ -952,10 +935,6 @@ document.addEventListener('click', function(e) {
     if(existing) existing.remove();
     target.appendChild(ripple);
     setTimeout(() => { ripple.remove(); }, 600); 
-});
-window.visualViewport?.addEventListener("resize", () => {
-    const chatSheet = document.getElementById("chat-sheet");
-    if (chatSheet) chatSheet.style.height = window.visualViewport.height + "px";
 });
 </script>
 </body> 
