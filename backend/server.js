@@ -10,18 +10,17 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: "10mb" }));
 
-// ✅ TEST ROUTE
+// ✅ ROOT CHECK
 app.get("/", (req, res) => {
   res.send("🚀 Scan Aushadhi PRO Backend Running");
 });
 
 
-// 🔥 1. ULTRA PRO SCAN API
+// 🔥 1. ULTRA PRO SCAN API (SMART AI ANALYSIS)
 app.post("/scan", async (req, res) => {
   try {
     const { image, lang = "en" } = req.body;
 
-    // ❌ Image validation
     if (!image || image.length < 1000) {
       return res.status(400).json({
         success: false,
@@ -34,30 +33,43 @@ app.post("/scan", async (req, res) => {
         ? "Respond in Hindi language."
         : "Respond in English language.";
 
+    // 🔥🔥🔥 ULTRA SMART PROMPT
     const prompt = `
-You are an advanced medical AI expert with high accuracy.
+You are a highly intelligent medical AI expert with deep pharmaceutical knowledge.
 
-STRICT TASK:
-- Deeply analyze the image (read labels, detect brand, ingredients)
-- Only accept:
-  ✔ Medicines
-  ✔ Skincare
-  ✔ Cosmetics
-  ✔ Supplements
-- Reject ALL other objects strictly
+GOAL:
+Analyze the product image and provide COMPLETE and DETAILED medical information.
 
-INTELLIGENCE MODE:
-- Do NOT guess blindly
-- If unclear → say "Not clearly visible"
-- Extract REAL data only
+IMPORTANT:
+- Carefully read all visible text (brand, ingredients, label)
+- If partially visible → intelligently infer using medical knowledge
+- If product is recognized → give full accurate details
+- DO NOT be overly conservative
+- DO NOT leave fields empty
 
-OUTPUT LANGUAGE:
-${languageNote}
+SMART ANALYSIS:
+- Visible → exact data
+- Partial → infer logically
+- Not visible → then say "Not clearly visible"
 
-RESPONSE RULES:
-- Return ONLY JSON
+CRITICAL:
+You MUST provide:
+✔ composition (even probable)
+✔ dosage (general safe dosage)
+✔ side effects (common known)
+✔ safety advice
+✔ warnings
 
-INVALID RESPONSE:
+Even if label is unclear → still provide best possible info using knowledge.
+
+PRODUCT TYPE:
+✔ Medicines
+✔ Skincare
+✔ Cosmetics
+✔ Supplements
+
+If not valid → return:
+
 {
   "name": "NOT_HEALTH_PRODUCT",
   "confidence": 0,
@@ -66,10 +78,14 @@ INVALID RESPONSE:
   "sections": {}
 }
 
-VALID RESPONSE:
+OUTPUT LANGUAGE:
+${languageNote}
+
+RETURN STRICT JSON:
+
 {
   "name": "",
-  "confidence": 0,
+  "confidence": 70,
   "category": "",
   "type": "",
   "brand": "",
@@ -84,38 +100,40 @@ VALID RESPONSE:
     "warnings": ""
   }
 }
+
+RULES:
+- NEVER leave fields empty
+- ALWAYS provide useful real-world info
+- Keep it short but informative
 `;
 
-    const response = await fetch(
-      "https://api.openai.com/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          model: "gpt-4o",
-          messages: [
-            { role: "system", content: prompt },
-            {
-              role: "user",
-              content: [
-                { type: "text", text: "Analyze this product image carefully" },
-                {
-                  type: "image_url",
-                  image_url: {
-                    url: `data:image/jpeg;base64,${image}`
-                  }
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "gpt-4o",
+        messages: [
+          { role: "system", content: prompt },
+          {
+            role: "user",
+            content: [
+              { type: "text", text: "Analyze this product image carefully" },
+              {
+                type: "image_url",
+                image_url: {
+                  url: `data:image/jpeg;base64,${image}`
                 }
-              ]
-            }
-          ],
-          max_tokens: 1000,
-          temperature: 0.3
-        })
-      }
-    );
+              }
+            ]
+          }
+        ],
+        max_tokens: 1000,
+        temperature: 0.4
+      })
+    });
 
     const data = await response.json();
     let reply = data.choices?.[0]?.message?.content || "{}";
@@ -123,7 +141,6 @@ VALID RESPONSE:
     reply = reply.replace(/```json|```/g, "").trim();
 
     let parsed;
-
     try {
       parsed = JSON.parse(reply);
     } catch {
@@ -145,22 +162,19 @@ VALID RESPONSE:
                 : "This is not a health product",
             warnings:
               lang === "hi"
-                ? "केवल दवाइयाँ स्कैन करें"
-                : "Scan only health products"
+                ? "कृपया केवल दवाइयाँ या स्किनकेयर उत्पाद स्कैन करें"
+                : "Scan only medicine or health products"
           }
         }
       });
     }
 
     // 🔥 SAFE DEFAULTS
-    parsed.name =
-      parsed.name ||
-      (lang === "hi" ? "अज्ञात उत्पाद" : "Unknown Product");
-
+    parsed.name = parsed.name || "Unknown Product";
     parsed.category = parsed.category || "General";
     parsed.type = parsed.type || "Product";
     parsed.brand = parsed.brand || "Unknown";
-    parsed.confidence = parsed.confidence || 50;
+    parsed.confidence = parsed.confidence || 75;
 
     if (!parsed.sections) parsed.sections = {};
 
@@ -169,32 +183,31 @@ VALID RESPONSE:
         ? {
             mainUse: "स्वास्थ्य उपयोग के लिए",
             otherUses: "अन्य उपयोग संभव हैं",
-            composition: "स्पष्ट नहीं",
-            dosage: "लेबल देखें",
+            composition: "संभावित संरचना",
+            dosage: "सामान्य खुराक डॉक्टर की सलाह अनुसार लें",
             howToUse: "निर्देश अनुसार उपयोग करें",
             sideEffects: "हल्के साइड इफेक्ट हो सकते हैं",
-            safety: "डॉक्टर से सलाह लें",
-            warnings: "⚠️ जानकारी सीमित है"
+            safety: "जरूरत हो तो डॉक्टर से सलाह लें",
+            warnings: "⚠️ सावधानी से उपयोग करें"
           }
         : {
-            mainUse: "Health related use",
+            mainUse: "Health-related use",
             otherUses: "Other uses possible",
-            composition: "Not clearly visible",
-            dosage: "Follow instructions",
+            composition: "Based on typical formulation",
+            dosage: "Take standard dosage or consult doctor",
             howToUse: "Use as directed",
-            sideEffects: "Mild side effects possible",
-            safety: "Consult expert",
-            warnings: "⚠️ Limited information"
+            sideEffects: "Common mild side effects possible",
+            safety: "Consult doctor if needed",
+            warnings: "⚠️ Use carefully"
           };
 
     parsed.sections = { ...defaultSections, ...parsed.sections };
 
-    // ⚠️ Low confidence warning
     if (parsed.confidence < 60) {
       parsed.sections.warnings +=
         lang === "hi"
-          ? " ⚠️ जानकारी पूरी तरह स्पष्ट नहीं"
-          : " ⚠️ Not fully accurate";
+          ? " ⚠️ जानकारी पूरी तरह सटीक नहीं हो सकती"
+          : " ⚠️ Information may not be fully accurate";
     }
 
     res.json({
@@ -217,51 +230,51 @@ VALID RESPONSE:
 });
 
 
-// 🔥 2. SIDE EFFECTS API
+// 🔥 2. SIDE EFFECTS (PRO LEVEL)
 app.post("/sideeffects", async (req, res) => {
   try {
     const { medicine, lang = "en" } = req.body;
 
     const prompt = `
-Tell side effects of ${medicine}.
-${lang === "hi" ? "Answer in Hindi." : "Answer in English."}
+You are a medical expert.
+
+Give detailed side effects of ${medicine}.
+Include common + rare effects + warnings.
+
+Language: ${lang === "hi" ? "Hindi" : "English"}
 
 Return JSON:
 {
-  "name": "",
+  "name": "${medicine}",
   "sideEffects": ""
 }
 `;
 
-    const response = await fetch(
-      "https://api.openai.com/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          model: "gpt-4o",
-          messages: [{ role: "user", content: prompt }],
-          max_tokens: 400
-        })
-      }
-    );
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "gpt-4o",
+        messages: [{ role: "user", content: prompt }],
+        max_tokens: 500
+      })
+    });
 
     const data = await response.json();
     let reply = data.choices?.[0]?.message?.content || "{}";
+
     reply = reply.replace(/```json|```/g, "").trim();
 
     let parsed;
-
     try {
       parsed = JSON.parse(reply);
     } catch {
       parsed = {
         name: medicine,
-        sideEffects:
-          lang === "hi" ? "डेटा उपलब्ध नहीं" : "No data available"
+        sideEffects: "No data available"
       };
     }
 
@@ -273,46 +286,47 @@ Return JSON:
 });
 
 
-// 🔥 3. COMPOSITION API
+// 🔥 3. COMPOSITION (PRO LEVEL)
 app.post("/composition", async (req, res) => {
   try {
     const { medicine, lang = "en" } = req.body;
 
     const prompt = `
-Give composition, uses and precautions of ${medicine}.
-${lang === "hi" ? "Answer in Hindi." : "Answer in English."}
+You are a pharmaceutical expert.
+
+Provide composition, uses, and precautions of ${medicine}.
+Give detailed and practical info.
+
+Language: ${lang === "hi" ? "Hindi" : "English"}
 
 Return JSON:
 {
-  "name": "",
+  "name": "${medicine}",
   "composition": "",
   "uses": "",
   "precautions": ""
 }
 `;
 
-    const response = await fetch(
-      "https://api.openai.com/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          model: "gpt-4o",
-          messages: [{ role: "user", content: prompt }],
-          max_tokens: 500
-        })
-      }
-    );
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "gpt-4o",
+        messages: [{ role: "user", content: prompt }],
+        max_tokens: 600
+      })
+    });
 
     const data = await response.json();
     let reply = data.choices?.[0]?.message?.content || "{}";
+
     reply = reply.replace(/```json|```/g, "").trim();
 
     let parsed;
-
     try {
       parsed = JSON.parse(reply);
     } catch {
@@ -332,38 +346,34 @@ Return JSON:
 });
 
 
-// 🔥 4. CHAT API (PRO)
+// 🔥 4. CHAT (SMART AI)
 app.post("/chat", async (req, res) => {
   try {
     const { messages } = req.body;
 
-    const response = await fetch(
-      "https://api.openai.com/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          model: "gpt-4o",
-          messages: [
-            {
-              role: "system",
-              content:
-                "You are a smart medical assistant. Give accurate answers."
-            },
-            ...messages
-          ],
-          temperature: 0.7,
-          max_tokens: 600
-        })
-      }
-    );
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content:
+              "You are a professional medical assistant. Give clear, safe, and accurate answers."
+          },
+          ...messages
+        ],
+        temperature: 0.7,
+        max_tokens: 700
+      })
+    });
 
     const data = await response.json();
-    const reply =
-      data.choices?.[0]?.message?.content || "No response";
+    const reply = data.choices?.[0]?.message?.content || "No response";
 
     res.json({ reply });
 
