@@ -845,28 +845,9 @@ function openChat() {
 }
 
 function closeChat() {
-    const overlay = document.getElementById('chat-overlay');
-    const sheet = document.getElementById('chat-sheet');
-
-    overlay.classList.remove('active');
-    sheet.classList.remove('active');
-
-    // 🔥 FORCE HIDE FIX (main bug fix)
-    sheet.style.transform = "translate(-50%, 100%)";
-
-    // 🔥 clean reset after animation
-    setTimeout(() => {
-        sheet.style.transform = "";
-        overlay.style.pointerEvents = "none";
-    }, 300);
-
-    // 🔥 scroll unlock
-    document.body.style.overflow = "";
-
-    // 🔊 stop voice
-    if ('speechSynthesis' in window && speechSynthesis.speaking) {
-        speechSynthesis.cancel();
-    }
+    document.getElementById('chat-overlay').classList.remove('active');
+    document.getElementById('chat-sheet').classList.remove('active');
+    if ('speechSynthesis' in window && speechSynthesis.speaking) speechSynthesis.cancel();
 }
 
 async function sendMessage() {
