@@ -137,7 +137,11 @@
         #scan-loader, #tab-loader .empty-state { text-align: center; padding: 2rem 1rem; } 
 
         /* RESULTS STYLING */
-        .result-name { font-size: 1.4rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.4rem; line-height: 1.2; } 
+        .result-name { font-size: 1.4rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.2rem; line-height: 1.2; } 
+        
+        /* 🔥 IMPROVED: Added confidence style */
+        .result-confidence { font-size: 0.85rem; color: var(--primary-start); font-weight: 600; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.3rem; }
+
         .badge-container { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1rem; padding-bottom: 0.8rem; border-bottom: 1px dashed var(--border); }
         .badge { padding: 0.2rem 0.6rem; border-radius: 99px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
         .category-badge { background: rgba(34,197,94,0.1); color: var(--primary-end); border: 1px solid rgba(34,197,94,0.2); }
@@ -671,24 +675,49 @@ function processImage(base64) {
     callBackend(base64);
 }
 
+// 🔥 IMPROVED: Network Fetch With Timeout & Retry
+async function fetchWithRetry(url, options, retries = 1, timeout = 15000) {
+    for (let i = 0; i <= retries; i++) {
+        try {
+            const controller = new AbortController();
+            const id = setTimeout(() => controller.abort(), timeout);
+            const response = await fetch(url, { ...options, signal: controller.signal });
+            clearTimeout(id);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            return await response.json();
+        } catch (error) {
+            if (i === retries) throw error;
+            console.warn(`Retry ${i + 1}/${retries} failed:`, error.message);
+        }
+    }
+}
+
 // BACKEND
 async function callBackend(base64) {
     const loaderEl = document.getElementById('scan-loader');
     if (!navigator.onLine) { resetLoader(loaderEl); showNotification(t[state.lang].noInternet, 'error', 'Offline'); return; }
 
     try {
-        const response = await fetch(`${API_URL}/scan`, {
+        // 🔥 IMPROVED: Using optimized fetch with 15s timeout and 1 automatic retry
+        const responseData = await fetchWithRetry(`${API_URL}/scan`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ image: base64, lang: state.lang })
-        });
-        if (!response.ok) throw new Error('Backend error');
-        const parsed = await response.json();
+        }, 1, 15000);
+
         resetLoader(loaderEl);
 
-        if (parsed.name === "UNKNOWN" || (parsed.category === "unknown" && Object.keys(parsed.sections||{}).length === 0)) {
-            showNotification(t[state.lang].invalidMedicine, 'warning', 'Invalid'); return;
+        // ✅ FIXED: Accurately handling the new `success` and `data` response format structure
+        if (!responseData || !responseData.success || !responseData.data) {
+            showNotification(t[state.lang].invalidMedicine, 'warning', 'Invalid'); 
+            return;
         }
+
+        // ⚠️ CHANGED: Safe fallbacks logic mapping to prevent UI crashes if some fields are missing
+        const parsed = responseData.data;
+        parsed.name = parsed.name || "Unknown Product";
+        parsed.sections = parsed.sections || {};
+        parsed.confidence = parsed.confidence || 0;
 
         state.scansToday++; localStorage.setItem('scansToday', state.scansToday); updateLimitUI();
         vibrate([60,30,60]);
@@ -702,7 +731,12 @@ async function callBackend(base64) {
 
         setTimeout(() => showResult(parsed, false), 500);
     } catch (error) {
-        resetLoader(loaderEl); showNotification(t[state.lang].serverError, 'error', 'Failed');
+        resetLoader(loaderEl); 
+        // 🔥 IMPROVED: Better Error messaging (timeout or server error fallback)
+        const isTimeout = error.name === 'AbortError';
+        const msg = isTimeout ? "Connection timed out" : t[state.lang].serverError;
+        showNotification(msg, 'error', 'Failed');
+        console.error("Backend Error:", error);
     }
 }
 
@@ -711,7 +745,17 @@ function resetLoader(loaderEl) {
 }
 
 function showResult(data, isRestore = false) {
-    let html = `<div class="result-name">${data.name}</div>`;
+    // ⚠️ CHANGED: Fallback UI handling for unpopulated names
+    let html = `<div class="result-name">${data.name || "Unknown Product"}</div>`;
+    
+    // 🔥 IMPROVED: Clean Confidence Display Injection
+    if (data.confidence) {
+        const confText = state.lang === 'hi' ? 'सटीकता' : 'Confidence Match';
+        html += `<div class="result-confidence">
+                    <i class="fas fa-check-circle"></i> ${confText}: ${data.confidence}%
+                 </div>`;
+    }
+
     if (data.category || data.type) {
         html += `<div class="badge-container">`;
         if (data.category && data.category !== "unknown") html += `<span class="badge category-badge">${data.category}</span>`;
@@ -730,20 +774,21 @@ function showResult(data, isRestore = false) {
         { key: 'warnings', icon: '🚫', label: t[state.lang].warnings }
     ];
 
-    if (data.sections) {
-        sectionsConfig.forEach(sec => {
-            const val = data.sections[sec.key];
-            if (val && val.trim() !== "") {
-                const lines = val.split(/(?<=\.)\s+|\n/).filter(l => l.trim() !== "");
-                const bullets = lines.map(l => `<li>${l}</li>`).join('');
-                html += `
-                <div class="result-card">
-                    <div class="result-card-header"><span class="result-icon">${sec.icon}</span><span class="result-label">${sec.label}</span></div>
-                    <ul class="result-value-list">${bullets}</ul>
-                </div>`;
-            }
-        });
-    }
+    // ⚠️ CHANGED: Fallback to empty object avoiding Uncaught TypeError on section map
+    const safeSections = data.sections || {};
+
+    sectionsConfig.forEach(sec => {
+        const val = safeSections[sec.key];
+        if (val && val.trim() !== "") {
+            const lines = val.split(/(?<=\.)\s+|\n/).filter(l => l.trim() !== "");
+            const bullets = lines.map(l => `<li>${l}</li>`).join('');
+            html += `
+            <div class="result-card">
+                <div class="result-card-header"><span class="result-icon">${sec.icon}</span><span class="result-label">${sec.label}</span></div>
+                <ul class="result-value-list">${bullets}</ul>
+            </div>`;
+        }
+    });
 
     html += `
     <div style="display:flex; gap:0.6rem; margin-top:1rem;">
@@ -760,7 +805,7 @@ function showResult(data, isRestore = false) {
     setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
 
     if (!isRestore) {
-        state.history.unshift({id:Date.now(), name:data.name, date:new Date().toLocaleDateString()});
+        state.history.unshift({id:Date.now(), name: data.name || "Unknown Product", date:new Date().toLocaleDateString()});
         localStorage.setItem('scanHistory', JSON.stringify(state.history));
         renderHistory();
     }
