@@ -970,7 +970,7 @@ function startVoiceInput() {
 }
 
 function shareApp() {
-    const link = "https://play.google.com/store/apps/details?id=com.yourapp";
+    const link = "https://play.google.com/store/apps/details?id=scan.aushadhi";
     const text = "🌿 Try Scan Aushadhi App!\n💊 Scan medicines instantly.\n👇 Download now:\n" + link;
     if (navigator.share) { navigator.share({ title: "Scan Aushadhi", text: text }).catch(() => window.open("https://wa.me/?text=" + encodeURIComponent(text), '_blank')); } 
     else { window.open("https://wa.me/?text=" + encodeURIComponent(text), '_blank'); }
